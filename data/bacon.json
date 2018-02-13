@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Skogsbacon",
+    "subtitle": "ca. 200 g",
+    "image": "/media/uploads/public/0/377/777-9e2e0-product_list.jpg",
+    "price": "kr 40,10",
+    "unitPrice": "kr 200,50 per kg"
+  },
+  {
+    "name": "Frokostegg Fra Frittgående Høner",
+    "subtitle": "Str L, 6 stk",
+    "image": "/media/uploads/public/0/210/8610-a1820-product_list.jpg",
+    "price": "kr 31,10",
+    "unitPrice": "kr 69,11 per kg"
+  },
+  {
+    "name": "Solgule Egg Fra Frittgående Høner",
+    "subtitle": "Str. M/L, 6 stk",
+    "image": "/media/uploads/public/389/80/684080-68890-product_list.jpg",
+    "price": "kr 31,00",
+    "unitPrice": "kr 77,50 per kg"
+  },
+  {
+    "name": "Økologiske Egg",
+    "subtitle": "Str S/M/L, 6 stk",
+    "image": "/media/uploads/public/217/233/186233-974e6-product_list.jpg",
+    "price": "kr 25,50",
+    "unitPrice": "kr 63,75 per kg"
+  },
+  {
+    "name": "Egg Xl",
+    "subtitle": "Frittgående, 6 stk",
+    "image": "/media/uploads/public/375/223/684223-6b917-product_list.jpg",
+    "price": "kr 32,90",
+    "unitPrice": "kr 71,52 per kg"
+  },
+  {
+    "name": "Frokostegg Fra Frittgående Høner",
+    "subtitle": "Str L, 12 stk",
+    "image": "/media/uploads/public/290/194/684194-7c7eb-product_list.jpg",
+    "price": "kr 44,90",
+    "unitPrice": "kr 49,89 per kg"
+  },
+  {
+    "name": "Egg Fra Frittgående Høner",
+    "subtitle": "Str M/L, 12 stk",
+    "image": "/media/uploads/public/0/212/8612-a5980-product_list.jpg",
+    "price": "kr 39,90",
+    "unitPrice": "kr 49,88 per kg"
+  },
+  {
+    "name": "Egg",
+    "subtitle": "Str S/M, 12 stk",
+    "image": "/media/uploads/public/90/127/684927-1f29f-product_list.jpg",
+    "price": "kr 25,90",
+    "unitPrice": "kr 43,17 per kg"
+  },
+  {
+    "name": "Egg Økologisk",
+    "subtitle": "6 stk",
+    "image": "/media/uploads/public/67/250/506250-a00d9-product_list.jpg",
+    "price": "kr 29,00",
+    "unitPrice": "kr 4,83 per stk"
+  }
+]

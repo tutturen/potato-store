@@ -1,0 +1,506 @@
+[
+  {
+    "name": "Sprett Yoghurt",
+    "subtitle": "Fruktmiks 8 x 125g, 1000 g",
+    "image": "/media/uploads/public/299/38/682438-eb332-product_list.jpg",
+    "price": "kr 44,40",
+    "unitPrice": "kr 44,40 per kg"
+  },
+  {
+    "name": "Sprett Yoghurt Frukt",
+    "subtitle": "Uten tilsatt sukker eller søtstoff 8x125g, 1000 g",
+    "image": "/media/uploads/public/394/118/684518-fa2e4-product_list.jpg",
+    "price": "kr 54,90",
+    "unitPrice": "kr 54,90 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt",
+    "subtitle": "2% Fett, 350 g",
+    "image": "/media/uploads/public/108/317/683917-c512b-product_list.jpg",
+    "price": "kr 32,70",
+    "unitPrice": "kr 93,43 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Naturell",
+    "subtitle": "750 g",
+    "image": "/media/uploads/public/245/94/684094-bb171-product_list.jpg",
+    "price": "kr 54,70",
+    "unitPrice": "kr 72,93 per kg"
+  },
+  {
+    "name": "Yoghurt Gresk Naturell",
+    "subtitle": "1 kg",
+    "image": "/media/uploads/public/64/360/680760-a2adf-product_list.jpg",
+    "price": "kr 53,40",
+    "unitPrice": "kr 53,40 per kg"
+  },
+  {
+    "name": "Frokostyoghurt Vanilje",
+    "subtitle": "Pose, 800 g",
+    "image": "/media/uploads/public/31/292/682292-cf7e0-product_list.jpg",
+    "price": "kr 34,90",
+    "unitPrice": "kr 43,63 per kg"
+  },
+  {
+    "name": "Q Frokostyoghurt Melon & Pasjonsfrukt",
+    "subtitle": "125 g",
+    "image": "/media/uploads/public/233/287/685487-4682f-product_list.jpg",
+    "price": "kr 14,90",
+    "unitPrice": "kr 119,20 per kg"
+  },
+  {
+    "name": "Q Frokostyoghurt Blåbær",
+    "subtitle": "125 g",
+    "image": "/media/uploads/public/206/261/685461-1c8a2-product_list.jpg",
+    "price": "kr 14,90",
+    "unitPrice": "kr 119,20 per kg"
+  },
+  {
+    "name": "Q Frokostyoghurt Melon & Pasjonsfrukt",
+    "subtitle": "Pose, 800 g",
+    "image": "/media/uploads/public/11/20/685220-a4669-product_list.jpg",
+    "price": "kr 34,90",
+    "unitPrice": "kr 43,63 per kg"
+  },
+  {
+    "name": "Q Barneyoghurt Banan",
+    "subtitle": "135 g",
+    "image": "/media/uploads/public/20/158/683358-8549c-product_list.jpg",
+    "price": "kr 16,20",
+    "unitPrice": "kr 120,00 per kg"
+  },
+  {
+    "name": "Danonino Drikkeyoghurt",
+    "subtitle": "Jordbær 4x100g, 400 g",
+    "image": "/media/uploads/public/160/12/680812-dfa70-product_list.jpg",
+    "price": "kr 27,90",
+    "unitPrice": "kr 69,75 per kg"
+  },
+  {
+    "name": "Yoghurt Tyrkisk Naturell 10%",
+    "subtitle": "1 kg",
+    "image": "/media/uploads/public/168/52/686052-2290b-product_list.jpg",
+    "price": "kr 54,20",
+    "unitPrice": "kr 54,20 per kg"
+  },
+  {
+    "name": "Yoghurt Mix No1",
+    "subtitle": "6x50g, 300 g",
+    "image": "/media/uploads/public/268/98/680898-7062f-product_list.jpg",
+    "price": "kr 20,80",
+    "unitPrice": "kr 69,33 per kg"
+  },
+  {
+    "name": "Skyr Mini Jordbær",
+    "subtitle": "Pose, 90 g",
+    "image": "/media/uploads/public/14/304/682304-2a8dd-product_list.jpg",
+    "price": "kr 15,40",
+    "unitPrice": "kr 171,11 per kg"
+  },
+  {
+    "name": "Skyr Mini Banan",
+    "subtitle": "Pose, 90 g",
+    "image": "/media/uploads/public/266/302/682302-fe544-product_list.jpg",
+    "price": "kr 14,30",
+    "unitPrice": "kr 158,89 per kg"
+  },
+  {
+    "name": "Skyr Mini Bringebær",
+    "subtitle": "90 g",
+    "image": "/media/uploads/public/312/178/684578-c3ca6-product_list.jpg",
+    "price": "kr 12,50",
+    "unitPrice": "kr 138,89 per kg"
+  },
+  {
+    "name": "Skyr Kaffe & Vanilje",
+    "subtitle": "175 g",
+    "image": "/media/uploads/public/132/7/685207-24f80-product_list.jpg",
+    "price": "kr 24,90",
+    "unitPrice": "kr 142,29 per kg"
+  },
+  {
+    "name": "Skyr Skogsbærkick",
+    "subtitle": "Med Musli, 170 g",
+    "image": "/media/uploads/public/240/261/690261-4989d-product_list.jpg",
+    "price": "kr 26,10",
+    "unitPrice": "kr 153,53 per kg"
+  },
+  {
+    "name": "Skyr Vanilje Müsli",
+    "subtitle": "Uten Tilsatt Sukker, 170 g",
+    "image": "/media/uploads/public/258/98/685298-12c2c-product_list.jpg",
+    "price": "kr 26,10",
+    "unitPrice": "kr 153,53 per kg"
+  },
+  {
+    "name": "Skyr Kokos",
+    "subtitle": "175 g",
+    "image": "/media/uploads/public/208/179/684179-2e860-product_list.jpg",
+    "price": "kr 23,70",
+    "unitPrice": "kr 135,43 per kg"
+  },
+  {
+    "name": "Skyr Appelsin & Mango",
+    "subtitle": "160 g",
+    "image": "/media/uploads/public/258/64/155264-9a204-product_list.jpg",
+    "price": "kr 21,40",
+    "unitPrice": "kr 133,75 per kg"
+  },
+  {
+    "name": "Skyr Blåbær & Vanilje",
+    "subtitle": "160 g",
+    "image": "/media/uploads/public/241/296/681096-5d16f-product_list.jpg",
+    "price": "kr 16,30",
+    "unitPrice": "kr 101,88 per kg"
+  },
+  {
+    "name": "Skyr Jordbær & Lime",
+    "subtitle": "160 g",
+    "image": "/media/uploads/public/105/33/683633-de004-product_list.jpg",
+    "price": "kr 20,20",
+    "unitPrice": "kr 126,25 per kg"
+  },
+  {
+    "name": "Skyr Fersken & Bringebær",
+    "subtitle": "160 g",
+    "image": "/media/uploads/public/24/131/685731-e39ea-product_list.jpg",
+    "price": "kr 19,80",
+    "unitPrice": "kr 123,75 per kg"
+  },
+  {
+    "name": "Byggrynslunsj med Bringebær",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/129/135/138935-d7984-product_list.jpg",
+    "price": "kr 17,40",
+    "unitPrice": "kr 116,00 per kg"
+  },
+  {
+    "name": "Byggrynslunsj med Blåbær",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/263/130/138930-ad508-product_list.jpg",
+    "price": "kr 16,10",
+    "unitPrice": "kr 107,33 per kg"
+  },
+  {
+    "name": "Byggrynslunsj med Jordbær",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/161/134/138934-2bf40-product_list.jpg",
+    "price": "kr 16,30",
+    "unitPrice": "kr 108,67 per kg"
+  },
+  {
+    "name": "Havrelunsj med Hagebær",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/82/124/138924-e9005-product_list.jpg",
+    "price": "kr 20,20",
+    "unitPrice": "kr 134,67 per kg"
+  },
+  {
+    "name": "Havrelunsj med Eple og Kanel",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/383/123/138923-73821-product_list.jpg",
+    "price": "kr 16,60",
+    "unitPrice": "kr 110,67 per kg"
+  },
+  {
+    "name": "Go'morgen ZERO",
+    "subtitle": "Bringebær, 190 g",
+    "image": "/media/uploads/public/110/87/682487-fd68b-product_list.jpg",
+    "price": "kr 17,40",
+    "unitPrice": "kr 91,58 per kg"
+  },
+  {
+    "name": "Go'morgen ZERO",
+    "subtitle": "Mango, 190 g",
+    "image": "/media/uploads/public/147/84/682484-15179-product_list.jpg",
+    "price": "kr 15,70",
+    "unitPrice": "kr 82,63 per kg"
+  },
+  {
+    "name": "Go'morgen Gresk",
+    "subtitle": "Naturell med Crüsli, 195 g",
+    "image": "/media/uploads/public/293/88/682488-fa025-product_list.jpg",
+    "price": "kr 16,60",
+    "unitPrice": "kr 85,13 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Melon- og pasjonsfrukt med 4-kornmüsli, 195 g",
+    "image": "/media/uploads/public/324/28/682428-2dd64-product_list.jpg",
+    "price": "kr 14,40",
+    "unitPrice": "kr 73,85 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Jordbær med 4-kornmüsli, 195 g",
+    "image": "/media/uploads/public/384/19/682419-b5df0-product_list.jpg",
+    "price": "kr 19,30",
+    "unitPrice": "kr 98,97 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Mango- og banan med fruktmüsli, 195 g",
+    "image": "/media/uploads/public/83/17/682417-eb49a-product_list.jpg",
+    "price": "kr 17,40",
+    "unitPrice": "kr 89,23 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Vaniljeyoghurt med havrecrisp, 195 g",
+    "image": "/media/uploads/public/277/36/682436-4c001-product_list.jpg",
+    "price": "kr 13,70",
+    "unitPrice": "kr 70,26 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Vaniljeyoghurt med nøttemix, 195 g",
+    "image": "/media/uploads/public/176/6/682406-1a4bf-product_list.jpg",
+    "price": "kr 17,40",
+    "unitPrice": "kr 89,23 per kg"
+  },
+  {
+    "name": "Go' Morgen",
+    "subtitle": "Skogsbæryoghurt med 4-kornmüsli, 195 g",
+    "image": "/media/uploads/public/349/24/682424-fdc3c-product_list.jpg",
+    "price": "kr 10,90",
+    "unitPrice": "kr 55,90 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Pekan & Honning",
+    "subtitle": "160 g",
+    "image": "/media/uploads/public/264/301/683901-a57df-product_list.jpg",
+    "price": "kr 27,30",
+    "unitPrice": "kr 170,63 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Jordbær & Granola",
+    "subtitle": "165 g",
+    "image": "/media/uploads/public/280/182/684182-65c23-product_list.jpg",
+    "price": "kr 21,40",
+    "unitPrice": "kr 129,70 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Vanilje & Granola",
+    "subtitle": "165 g",
+    "image": "/media/uploads/public/276/303/683903-947f7-product_list.jpg",
+    "price": "kr 23,70",
+    "unitPrice": "kr 143,64 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Sitron",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/392/24/683224-af702-product_list.jpg",
+    "price": "kr 14,90",
+    "unitPrice": "kr 99,33 per kg"
+  },
+  {
+    "name": "14 Gresk yoghurt Vanilje",
+    "subtitle": "170 g",
+    "image": "/media/uploads/public/0/66/90466-99c75-product_list.jpg",
+    "price": "kr 24,40",
+    "unitPrice": "kr 143,53 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Jordbær",
+    "subtitle": "150 g",
+    "image": "/media/uploads/public/48/351/683951-ed0aa-product_list.jpg",
+    "price": "kr 16,60",
+    "unitPrice": "kr 110,67 per kg"
+  },
+  {
+    "name": "Rislunsj Med Jordbær",
+    "subtitle": "Piano, 150 g",
+    "image": "/media/uploads/public/286/215/146215-517c1-product_list.jpg",
+    "price": "kr 12,30",
+    "unitPrice": "kr 82,00 per kg"
+  },
+  {
+    "name": "Rislunsj Med Bringebær & Rips",
+    "subtitle": "Piano, 150 g",
+    "image": "/media/uploads/public/61/216/146216-624d1-product_list.jpg",
+    "price": "kr 11,80",
+    "unitPrice": "kr 78,67 per kg"
+  },
+  {
+    "name": "Flow Bringebærdrøm",
+    "subtitle": "165 g",
+    "image": "/media/uploads/public/155/313/683913-a15f6-product_list.jpg",
+    "price": "kr 28,50",
+    "unitPrice": "kr 172,73 per kg"
+  },
+  {
+    "name": "Flow Kremet Mint",
+    "subtitle": "165 g",
+    "image": "/media/uploads/public/155/325/683925-e7939-product_list.jpg",
+    "price": "kr 28,50",
+    "unitPrice": "kr 172,73 per kg"
+  },
+  {
+    "name": "Piano Duo Yoghurt",
+    "subtitle": "Sjokolade og sjokocrisp, 122 g",
+    "image": "/media/uploads/public/0/172/19372-92b09-product_list.jpg",
+    "price": "kr 11,50",
+    "unitPrice": "kr 94,26 per kg"
+  },
+  {
+    "name": "Piano Duo Yoghurt og Nøttetoffee",
+    "subtitle": "119 g",
+    "image": "/media/uploads/public/0/44/6844-1ab58-product_list.jpg",
+    "price": "kr 13,00",
+    "unitPrice": "kr 109,24 per kg"
+  },
+  {
+    "name": "Yoghurt Nyt",
+    "subtitle": "Pære og Eple, 4x125g, 500 g",
+    "image": "/media/uploads/public/0/166/19366-66b36-product_list.jpg",
+    "price": "kr 27,80",
+    "unitPrice": "kr 55,60 per kg"
+  },
+  {
+    "name": "Yoghurt Blåbær & Bringebær",
+    "subtitle": "4x125g, 500 g",
+    "image": "/media/uploads/public/0/387/6787-c0477-product_list.jpg",
+    "price": "kr 22,30",
+    "unitPrice": "kr 44,60 per kg"
+  },
+  {
+    "name": "Yoghurt Sviske",
+    "subtitle": "4x150g, 600 g",
+    "image": "/media/uploads/public/0/202/19402-c3297-product_list.jpg",
+    "price": "kr 20,20",
+    "unitPrice": "kr 33,67 per kg"
+  },
+  {
+    "name": "Yoghurt Vanilje",
+    "subtitle": "4x150g, 600 g",
+    "image": "/media/uploads/public/326/260/155860-b98d7-product_list.jpg",
+    "price": "kr 19,00",
+    "unitPrice": "kr 31,67 per kg"
+  },
+  {
+    "name": "Yoghurt Jordbær",
+    "subtitle": "4x150g, 600 g",
+    "image": "/media/uploads/public/0/135/935-b3ab5-product_list.jpg",
+    "price": "kr 17,30",
+    "unitPrice": "kr 28,83 per kg"
+  },
+  {
+    "name": "Yoghurt Skogsbær",
+    "subtitle": "4x150g, 600 g",
+    "image": "/media/uploads/public/0/134/934-5cfab-product_list.jpg",
+    "price": "kr 18,30",
+    "unitPrice": "kr 30,50 per kg"
+  },
+  {
+    "name": "Yoghurt Melon",
+    "subtitle": "4x150g, 600 g",
+    "image": "/media/uploads/public/0/384/6784-65b86-product_list.jpg",
+    "price": "kr 17,80",
+    "unitPrice": "kr 29,67 per kg"
+  },
+  {
+    "name": "Yoghurt Laktosefri",
+    "subtitle": "Blåbær og Vanilje, 4x125g, 500 g",
+    "image": "/media/uploads/public/0/304/19504-ff6e7-product_list.jpg",
+    "price": "kr 26,10",
+    "unitPrice": "kr 52,20 per kg"
+  },
+  {
+    "name": "Yoplait Safari Apeyoghurt",
+    "subtitle": "8x125g, 1 kg",
+    "image": "/media/uploads/public/0/39/94039-f0175-product_list.jpg",
+    "price": "kr 42,90",
+    "unitPrice": "kr 42,90 per kg"
+  },
+  {
+    "name": "Sprett Yoghurt Banan",
+    "subtitle": "Uten 4x125g, 500 g",
+    "image": "/media/uploads/public/306/133/686933-b9a4b-product_list.jpg",
+    "price": "kr 18,90",
+    "unitPrice": "kr 37,80 per kg"
+  },
+  {
+    "name": "Yoplait 00%",
+    "subtitle": "Blåbær, 4x124g, 500 g",
+    "image": "/media/uploads/public/0/45/94045-6a244-product_list.jpg",
+    "price": "kr 24,30",
+    "unitPrice": "kr 48,60 per kg"
+  },
+  {
+    "name": "Yoplait 00%",
+    "subtitle": "Jordbær & Bringebær 4x125g, 500 g",
+    "image": "/media/uploads/public/0/48/94048-b104b-product_list.jpg",
+    "price": "kr 22,90",
+    "unitPrice": "kr 45,80 per kg"
+  },
+  {
+    "name": "Yoplait 00%",
+    "subtitle": "Fersken & Pasjonsfrukt, 4x125g, 500 g",
+    "image": "/media/uploads/public/0/57/94057-723b8-product_list.jpg",
+    "price": "kr 26,10",
+    "unitPrice": "kr 52,20 per kg"
+  },
+  {
+    "name": "Yoplait 00%",
+    "subtitle": "Kirsebær, 4x125g, 500 g",
+    "image": "/media/uploads/public/0/51/94051-92dbe-product_list.jpg",
+    "price": "kr 39,70",
+    "unitPrice": "kr 79,40 per kg"
+  },
+  {
+    "name": "Yoplait 00%",
+    "subtitle": "Vanilje, 4x125g, 500 g",
+    "image": "/media/uploads/public/0/42/94042-519e0-product_list.jpg",
+    "price": "kr 23,40",
+    "unitPrice": "kr 46,80 per kg"
+  },
+  {
+    "name": "Yoghurt Fyldig Vanilje",
+    "subtitle": "380 g",
+    "image": "/media/uploads/public/0/344/93544-e813a-product_list.jpg",
+    "price": "kr 26,90",
+    "unitPrice": "kr 70,79 per kg"
+  },
+  {
+    "name": "Biola Yoghurt Mild Med Fiber",
+    "subtitle": "500 g",
+    "image": "/media/uploads/public/0/62/6862-2a71b-product_list.jpg",
+    "price": "kr 22,50",
+    "unitPrice": "kr 45,00 per kg"
+  },
+  {
+    "name": "Yoghurt",
+    "subtitle": "Laktosefri, 500 g",
+    "image": "/media/uploads/public/0/1/1201-9cecb-product_list.jpg",
+    "price": "kr 21,20",
+    "unitPrice": "kr 42,40 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Vanilje",
+    "subtitle": "350 g",
+    "image": "/media/uploads/public/83/306/683906-9f9c6-product_list.jpg",
+    "price": "kr 32,70",
+    "unitPrice": "kr 93,43 per kg"
+  },
+  {
+    "name": "Gresk Yoghurt Naturell",
+    "subtitle": "Laktosefri, 350 g",
+    "image": "/media/uploads/public/270/45/683245-6512b-product_list.jpg",
+    "price": "kr 40,40",
+    "unitPrice": "kr 115,43 per kg"
+  },
+  {
+    "name": "Yoghurt Jordbær",
+    "subtitle": "500 g",
+    "image": "/media/uploads/public/0/331/96331-8e689-product_list.jpg",
+    "price": "kr 21,40",
+    "unitPrice": "kr 42,80 per kg"
+  },
+  {
+    "name": "Yoghurt Naturell",
+    "subtitle": "500 g",
+    "image": "/media/uploads/public/0/337/108337-e387f-product_list.jpg",
+    "price": "kr 17,90",
+    "unitPrice": "kr 35,80 per kg"
+  }
+]
