@@ -1,0 +1,37 @@
+type Query {
+
+}
+
+type Mutation {
+
+}
+
+type User {
+  id: ID!
+  username: String!
+  cart: Cart!
+}
+
+type Cart {
+  products: [Product!]!
+  totalBeforeDiscount: Float!
+  totalDiscount: Float!
+  total: Float!
+}
+
+type Category {
+  id: ID
+  name: String
+  products: [Product!]!
+}
+
+type Product {
+  id: ID!
+  name: String!
+  subtitle: String
+  image: String
+  price: Float
+  unitPrice: Float
+  unit: String
+  category: Category
+}
