@@ -1,14 +1,12 @@
 FROM python:3
 
 ENV PYTHONUNBUFFERED 1
-ENV DJANGO_COMMAND 'runserver'
 
+RUN mkdir /code
 ADD src /code/
 WORKDIR /code
-RUN pip install -r requirements.txt
+RUN pip install pipenv && pipenv install --system
 
-ENTRYPOINT ["/usr/local/bin/python3", "/code/manage.py"]
-
-CMD $DJANGO_COMMAND 0.0.0.0
+CMD gunicorn potatostore.wsgi
 
 EXPOSE 8000
