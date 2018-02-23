@@ -1,0 +1,5 @@
+#!/bin/bash
+docker login --username=_ --password="$HEROKU_TOKEN" registry.heroku.com
+docker build -t registry.heroku.com/$HEROKU_APP/web -f Dockerfile.production .
+docker push registry.heroku.com/$HEROKU_APP/web
+#heroku run --app $HEROKU_APP python manage.py migrate
