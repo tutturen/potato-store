@@ -34,4 +34,5 @@ type Product {
   unitPrice: Float
   unit: String
   category: Category
+  organic: Boolean!
 }
