@@ -9,7 +9,7 @@ test:
 
 .PHONY: docker_build_prod
 docker_build_prod:
-	docker build -t registry.heroku.com/$(HEROKU_APP)web -f Dockerfile.production .
+	docker build -t registry.heroku.com/$(HEROKU_APP)/web -f Dockerfile.production .
 
 .PHONY: docker_push
 docker_push_prod:
