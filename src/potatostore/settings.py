@@ -77,7 +77,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'potato.wsgi.application'
+WSGI_APPLICATION = 'potatostore.wsgi.application'
 
 
 # Database
