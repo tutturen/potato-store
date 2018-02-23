@@ -5,7 +5,7 @@ install_dep:
 
 .PHONY: test
 test:
-	cd src && pipenv run ./manage.py test
+	docker build -f Dockerfile.testing .
 
 .PHONY: docker_build_prod
 docker_build_prod:

@@ -1,12 +1,9 @@
 sudo: required
 services:
   - docker
-install:
-  - make install_dep
 script:
   - make test
   - make docker_build_prod
-
 deploy:
   provider: script
   script: make docker_push_prod
