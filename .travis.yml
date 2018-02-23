@@ -1,8 +1,6 @@
 sudo: required
 services:
   - docker
-language: python
-python: "3.6"
 install:
   - make install_dep
 script:
