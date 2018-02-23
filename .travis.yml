@@ -3,9 +3,6 @@ services:
   - docker
 language: python
 python: "3.6"
-install:
-  - pip install pipenv
-  - cd src && pipenv install
 script:
   - docker build -f Dockerfile.testing .
   - docker build -t registry.heroku.com/$HEROKU_APP/web -f Dockerfile.production .
