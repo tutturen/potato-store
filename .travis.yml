@@ -1,6 +1,12 @@
-language: python
-python: "3.6"
-install:
-- pip install -r src/requirements.txt
+sudo: required
+services:
+  - docker
 script:
-- src/manage.py test
+  - make test
+  - make docker_build_prod
+deploy:
+  provider: script
+  script: make docker_push_prod
+  on:
+    branch: master
+
