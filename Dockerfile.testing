@@ -7,8 +7,4 @@ ADD src /code/
 WORKDIR /code
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["/usr/local/bin/python3", "/code/manage.py"]
-
-CMD $DJANGO_COMMAND 0.0.0.0
-
-EXPOSE 8000
+RUN python3 /code/manage.py test
