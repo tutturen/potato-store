@@ -9,4 +9,4 @@ ADD Pipfile.lock /code/
 RUN pipenv install --system
 ADD . /code/
 
-CMD gunicorn potato.wsgi
+CMD gunicorn potatostore.wsgi
