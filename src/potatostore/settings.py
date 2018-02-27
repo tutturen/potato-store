@@ -29,6 +29,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,7 @@ GRAPHENE = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -137,3 +139,16 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Cross Origin Resource Sharing options,
+# see https://github.com/ottoyiu/django-cors-headers
+CORS_ORIGIN_WHITELIST = (
+    # Allow the deployed React application to access our site
+    'tutturen.github.io',
+    # Allow when developing locally
+    'localhost:3000',
+    'localhost:8000',
+    'localhost:8080',
+)
+# Apply CORS headers only to the GraphQL API, not the admin pages
+CORS_URLS_REGEX = r'^/graphql/?.*$'
