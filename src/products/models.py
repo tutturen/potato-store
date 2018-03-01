@@ -26,7 +26,7 @@ class PercentSale(models.Model):
             super(PercentSale, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.product)
+        return str(self.product) + ' (' + str(self.cut) + '% sale)'
 
 class PackageDeal(models.Model):
     product = models.ManyToManyField('Product')
@@ -44,7 +44,7 @@ class PackageDeal(models.Model):
             super(PackageDeal, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.product)
+        return str(self.minimumQuantity) + " for " + str(self.paidQuantity) + " on: " + ", ".join(p.name for p in self.product.all())
 
 class Product(models.Model):
     # Category, name, organic and notes
