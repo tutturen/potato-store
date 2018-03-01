@@ -23,15 +23,25 @@ class PercentSale(models.Model):
 
     def save(self, *args, **kwargs):
         if self.cut > 0 and self.cut < 100:
-            super(Product, self).save(*args, **kwargs)
+            super(PercentSale, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.product)
 
 class PackageDeal(models.Model):
     product = models.ManyToManyField('Product')
-    paidQuantity = models.IntegerField()
-    minimumQuantity = models.IntegerField()
+    paidQuantity = models.IntegerField("Paid quantity")
+    minimumQuantity = models.IntegerField("Minimum quantity")
+
+    def clean(self):
+        if self.paidQuantity <= 0 or self.minimumQuantity <= 0:
+            raise ValidationError("Negative or zero values are not allowed")
+        elif self.paidQuantity >= self.minimumQuantity:
+            raise ValidationError("Minimum quantity must be greater than paid quantity")
+
+    def save(self, *args, **kwargs):
+        if self.paidQuantity > 0 and self.minimumQuantity > 0 and self.paidQuantity < self.minimumQuantity:
+            super(PackageDeal, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.product)
