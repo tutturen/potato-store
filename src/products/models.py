@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -27,26 +28,48 @@ class PackageDeal(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100)
-    notes = models.TextField()
+    # Category, name, organic and notes
     category = models.ForeignKey(Category,
         related_name='products',
         on_delete=models.CASCADE
     )
-    price = models.FloatField()
-    unitPrice = models.FloatField()
-    unit = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
     organic = models.BooleanField()
+    notes = models.TextField()
+
+    # Product pricing
+    price = models.FloatField("Price per product")
+    unitPrice = models.FloatField("Unit price")
+    unit = models.CharField("Unit type", max_length=30)
+
+    # Sale types
     percentSale = models.ForeignKey(PercentSale,
         related_name='products',
         on_delete=models.DO_NOTHING,
-        null=True
+        null=True,
+        blank=True,
+        verbose_name="Percentage-based sale"
         )
     packageDeal = models.ForeignKey(PackageDeal,
         related_name='products',
         on_delete=models.DO_NOTHING,
-        null=True
+        null=True,
+        blank=True,
+        verbose_name="Package-deal based sale"
         )
+
+    def clean(self):
+        if self.percentSale and self.packageDeal:
+            raise ValidationError('You cannot have both percentage sale and package deal at the same time.')
+
+    def save(self, *args, **kwargs):
+        if not self.percentSale:
+            self.percentSale = None
+
+        if not self.packageDeal:
+            self.packageDeal = None
+
+        super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
