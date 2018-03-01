@@ -103,7 +103,7 @@ class Cart(models.Model):
     total = models.FloatField()
 
     def __str__(self):
-        return str(self.products)
+        return 'This user has ' + str(self.products.count()) + ' items in the cart'
 
 class Receipt(models.Model):
     success = models.BooleanField()
@@ -116,16 +116,34 @@ class Receipt(models.Model):
         return str(self.cart)
 
 class User(models.Model):
-    firstName = models.CharField(max_length=100)
-    lastName = models.CharField(max_length=100)
-    username = models.CharField(max_length=50)
+    firstName = models.CharField("First name", max_length=100)
+    lastName = models.CharField("Last name", max_length=100)
+    username = models.CharField("Username", max_length=50)
     cart = models.ForeignKey(Cart,
         # related_name='products',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        # We need to allow this field to be null in the admin, fixing it in save
+        null=True,
+        blank=True
     )
 
+    def save(self, *args, **kwargs):
+        if not self.cart:
+            # Admin probably creating new user, create new cart too
+            cart = Cart()
+            cart.totalBeforeDiscount = 0.0
+            cart.totalDiscount = 0.0
+            cart.total = 0.0
+
+            # Save the cart and attach it to our user
+            cart.save()
+            self.cart = cart
+
+        super(User, self).save(*args, **kwargs)
+
+    # Customize the name shown in the admin panel
     def __str__(self):
-        return self.username
+        return self.firstName + ' ' + self.lastName + ' (' + self.username + ')'
 
 class LoginResult(models.Model):
     user = models.ForeignKey(User,

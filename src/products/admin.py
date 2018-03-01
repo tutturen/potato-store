@@ -20,7 +20,15 @@ class ProductAdmin(admin.ModelAdmin):
         ('Sale', {'fields': ['percentSale', 'packageDeal']})
     ]
 
+class UserAdmin(admin.ModelAdmin):
+    fields = ['firstName', 'lastName', 'username', 'cart']
+    readonly_fields = ['cart']
+
+    def cart(self, obj):
+        return 'Secrets! {}'.format(obj.cart)
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(PercentSale, PercentSaleAdmin)
 admin.site.register(PackageDeal, PackageDealAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(User, UserAdmin)
