@@ -19,6 +19,9 @@ class UserType(DjangoObjectType):
 
 
 class CartType(DjangoObjectType):
+
+    products = graphene.List(lambda: ProductType)
+
     class Meta:
         model = Cart
 
@@ -48,14 +51,16 @@ class Query(graphene.ObjectType):
         products = kwargs['products']
         dbproducts = []
 
-        cart = Cart(totalBeforeDiscount=0,
-                    totalDiscount=0,
-                    total=0)
+        cart = CartType(totalBeforeDiscount=0,
+                        totalDiscount=0,
+                        total=0)
 
         for productId in products:
             query = Product.objects.filter(id=productId)
             dbproducts = dbproducts + [x for x in query]
             if len(query) != 0:
                 cart.totalBeforeDiscount += query[0].price
+
+        cart.products = dbproducts
 
         return cart
