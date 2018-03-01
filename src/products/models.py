@@ -7,16 +7,26 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-
 class PercentSale(models.Model):
     product = models.ForeignKey('Product',
         on_delete=models.CASCADE
     )
-    cut = models.IntegerField()
+    cut = models.IntegerField("Cut in percent")
+
+    def clean(self):
+        if self.cut < 0:
+            raise ValidationError("Percentage cannot be negative")
+        elif self.cut == 0:
+            raise ValidationError("For no sale, remove it in the product first and then delete it here")
+        elif not (self.cut > 0 and self.cut < 100):
+            raise ValidationError("Percentage must be between 1 and 99")
+
+    def save(self, *args, **kwargs):
+        if self.cut > 0 and self.cut < 100:
+            super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.product)
-
 
 class PackageDeal(models.Model):
     product = models.ManyToManyField('Product')
@@ -25,7 +35,6 @@ class PackageDeal(models.Model):
 
     def __str__(self):
         return str(self.product)
-
 
 class Product(models.Model):
     # Category, name, organic and notes
@@ -86,7 +95,6 @@ class Cart(models.Model):
     def __str__(self):
         return str(self.products)
 
-
 class Receipt(models.Model):
     success = models.BooleanField()
     cart = models.ForeignKey(Cart,
@@ -96,7 +104,6 @@ class Receipt(models.Model):
 
     def __str__(self):
         return str(self.cart)
-
 
 class User(models.Model):
     firstName = models.CharField(max_length=100)
@@ -109,7 +116,6 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
-
 
 class LoginResult(models.Model):
     user = models.ForeignKey(User,
