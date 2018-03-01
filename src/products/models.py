@@ -69,11 +69,13 @@ class Product(models.Model):
         if not self.packageDeal:
             self.packageDeal = None
 
-        super(Product, self).save(*args, **kwargs)
+        if self.percentSale and self.packageDeal:
+            pass
+        else:
+            super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-
 
 class Cart(models.Model):
     products = models.ManyToManyField(Product)
