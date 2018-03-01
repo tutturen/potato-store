@@ -48,19 +48,43 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_cart(self, info, **kwargs):
+        # Product IDs requested and results to return
         products = kwargs['products']
         dbproducts = []
 
+        # Create empty cart type
         cart = CartType(totalBeforeDiscount=0,
                         totalDiscount=0,
                         total=0)
 
+        # For every product requested
         for productId in products:
+            # Query the database
             query = Product.objects.filter(id=productId)
+
+            # Add all to the result list
             dbproducts = dbproducts + [x for x in query]
+
+            # Calculate prices if possible
             if len(query) != 0:
+                # Add item price
                 cart.totalBeforeDiscount += query[0].price
 
-        cart.products = dbproducts
+                # Default no sale
+                saleprice = query[0].price
 
+                # If there are discounts
+                if query[0].percentSale:
+                    saleprice = query[0].price * query[0].percentSale.cut * 0.01
+                if query[0].packageDeal:
+                    # We need to count stuff then divide by minimum quantity
+                    # to figure out how many times to apply the paid quantity.
+                    pass
+
+                # At last add sum
+                cart.totalDiscount += query[0].price - saleprice
+                cart.total += saleprice
+
+        # Return cart with products
+        cart.products = dbproducts
         return cart
