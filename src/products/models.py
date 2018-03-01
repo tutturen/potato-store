@@ -7,6 +7,25 @@ class Category(models.Model):
         return self.name
 
 
+class PercentSale(models.Model):
+    product = models.ForeignKey('Product',
+        on_delete=models.CASCADE
+    )
+    cut = models.IntegerField()
+
+    def __str__(self):
+        return str(self.product)
+
+
+class PackageDeal(models.Model):
+    product = models.ManyToManyField('Product')
+    paidQuantity = models.IntegerField()
+    minimumQuantity = models.IntegerField()
+
+    def __str__(self):
+        return str(self.product)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     notes = models.TextField()
@@ -14,6 +33,20 @@ class Product(models.Model):
         related_name='products',
         on_delete=models.CASCADE
     )
+    price = models.FloatField()
+    unitPrice = models.FloatField()
+    unit = models.CharField(max_length=30)
+    organic = models.BooleanField()
+    percentSale = models.ForeignKey(PercentSale,
+        related_name='products',
+        on_delete=models.DO_NOTHING,
+        null=True
+        )
+    packageDeal = models.ForeignKey(PackageDeal,
+        related_name='products',
+        on_delete=models.DO_NOTHING,
+        null=True
+        )
 
     def __str__(self):
         return self.name
@@ -62,22 +95,3 @@ class LoginResult(models.Model):
 
     def __str__(self):
         return str(self.user) + str(self.token)
-
-
-class PercentSale(models.Model):
-    product = models.ForeignKey(Product,
-        on_delete=models.CASCADE
-    )
-    cut = models.IntegerField()
-
-    def __str__(self):
-        return str(self.product)
-
-
-class PackageDeal(models.Model):
-    product = models.ManyToManyField(Product)
-    paidQuantity = models.IntegerField()
-    minimumQuantity = models.IntegerField()
-
-    def __str__(self):
-        return str(self.product)

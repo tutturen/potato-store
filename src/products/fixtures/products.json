@@ -1,24 +1,28 @@
 [
   { "model": "products.category", "pk": 1, "fields": { "name": "Dairy" } },
   { "model": "products.category", "pk": 2, "fields": { "name": "Meat" } },
+
+  { "model": "products.packagedeal", "pk": 1, "fields": { "product": [4], "paidQuantity": 2, "minimumQuantity": 3 } },
+  { "model": "products.percentsale", "pk": 1, "fields": { "cut": 50, "product": 3 } },
+
   {
     "model": "products.product",
     "pk": 1,
-    "fields": { "name": "Eggs", "notes": "Good old eggs", "category": 1 }
+    "fields": { "name": "Eggs", "notes": "Good old eggs", "category": 1, "price": 15.99, "unitPrice": 1.99, "unit": "pc", "organic": false  }
   },
   {
     "model": "products.product",
     "pk": 2,
-    "fields": { "name": "Milk", "notes": "Comes from a cow", "category": 1 }
+    "fields": { "name": "Milk", "notes": "Comes from a cow", "category": 1, "price": 15.49, "unitPrice": 15.49, "unit": "L", "organic": false }
   },
   {
     "model": "products.product",
     "pk": 3,
-    "fields": { "name": "Beef", "notes": "Much like milk, this comes from a cow", "category": 2 }
+    "fields": { "name": "Beef", "notes": "Much like milk, this comes from a cow", "category": 2, "price": 49.99, "unitPrice": 49.99, "unit": "kg", "organic": false, "percentSale": 1 }
   },
   {
     "model": "products.product",
     "pk": 4,
-    "fields": { "name": "Chicken", "notes": "Definitely doesn't come from a cow", "category": 2 }
+    "fields": { "name": "Chicken", "notes": "Definitely doesn't come from a cow", "category": 2, "price": 39.99, "unitPrice": 29.99, "unit": "kg", "organic": true, "packageDeal": 1  }
   }
 ]
