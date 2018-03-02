@@ -2,21 +2,17 @@ import graphene
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
 
-
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
 
-
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-
 
 class PercentSaleType(DjangoObjectType):
     class Meta:
@@ -27,19 +23,38 @@ class PackageDealType(DjangoObjectType):
     class Meta:
         model = PackageDeal
 
-
 class CartType(graphene.ObjectType):
     products = graphene.List(lambda: ProductType)
     totalBeforeDiscount = graphene.Float()
     totalDiscount = graphene.Float()
     total = graphene.Float()
 
-
 class LoginResultType(graphene.ObjectType):
     user = UserType
     success = graphene.Boolean()
     token = graphene.String()
 
+class CreateAccount(graphene.Mutation):
+    class Arguments:
+        firstName = graphene.String(required=True)
+        lastName = graphene.String(required=True)
+        username = graphene.String(required=True)
+
+    result = graphene.Field(LoginResultType)
+
+    def mutate(self, info, firstName, lastName, username):
+        try:
+            user = User.objects.create (
+                firstName = firstName,
+                lastName = lastName,
+                username = username)
+            user.save()
+            result = LoginResultType(success=True, token="This is a token muhaha")
+            return CreateAccount(result=result)
+        except:
+            print("Failed to create user")
+            result = LoginResultType(success=False)
+            return CreateAccount(result=result)
 
 class Query(graphene.ObjectType):
     all_categories = graphene.NonNull(graphene.List(graphene.NonNull(CategoryType)))
@@ -103,3 +118,6 @@ class Query(graphene.ObjectType):
         # Return cart with products
         cart.products = dbproducts
         return cart
+
+class Mutation(graphene.ObjectType):
+    create_account = CreateAccount.Field()
