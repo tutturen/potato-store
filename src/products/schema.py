@@ -1,6 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
+from django.db.models.query import QuerySet
 
 
 class CategoryType(DjangoObjectType):
@@ -43,8 +44,8 @@ class LoginResultType(graphene.ObjectType):
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
-    minPrice = graphene.Int(required=False)
-    maxPrice = graphene.Int(required=False)
+    minPrice = graphene.Float(required=False)
+    maxPrice = graphene.Float(required=False)
     category = graphene.List(graphene.ID, required=False)
     onSale = graphene.Boolean(required=False)
     organic = graphene.Boolean(required=False)
@@ -67,27 +68,42 @@ class Query(graphene.ObjectType):
     def resolve_all_products(self, info, filter={}):
 
         field_mappings = {
-            'text': ['name', 'subtitle']
+            'text': ['name', 'subtitle'],
+            'minPrice': ['price'],
+            'maxPrice': ['price']
         }
 
         def search_fields(products, filterName, filterValue):
             if filterName not in field_mappings:
                 return products
 
+            new_products = None
             for mapping in field_mappings[filterName]:
-                kw = {mapping + '__contains': filterValue}
-                products = products.filter(**kw)
+                kw = None
+                # Generate the filter
+                if filterName == 'text':
+                    kw = {mapping + '__contains': filterValue}
+                elif filterName == 'minPrice':
+                    kw = {'price__gte': filterValue}
+                elif filterName == 'maxPrice':
+                    kw = {'price__lte': filterValue}
 
-            return products
+                # Do the filtering and union
+                print(kw)
+                if new_products is not None:
+                    new_products = new_products.union(products.filter(**kw))
+                else:
+                    new_products = products.filter(**kw)
+
+            return new_products
 
         # We can easily optimize query count in the resolve method
         products = Product.objects.all()
         for field in filter:
-            print(field, filter[field])
             products = search_fields(products, field, filter[field])
 
-        print(type(products))
-        return Product.objects.select_related('category').all()
+        print(type(products), len(products))
+        return products
 
     def resolve_category(self, info, **kwargs):
         try:
