@@ -1,4 +1,6 @@
 import graphene
+import graphql_jwt
+import django
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
 
@@ -12,7 +14,7 @@ class ProductType(DjangoObjectType):
 
 class UserType(DjangoObjectType):
     class Meta:
-        model = User
+        model = django.contrib.auth.models.User
 
 class PercentSaleType(DjangoObjectType):
     class Meta:
@@ -55,6 +57,36 @@ class CreateAccount(graphene.Mutation):
             print("Failed to create user")
             result = LoginResultType(success=False)
             return CreateAccount(result=result)
+
+class ObtainJSONWebToken(graphql_jwt.JSONWebTokenMutation):
+    user = graphene.Field(UserType)
+
+    @classmethod
+    def resolve(cls, root, info):
+        return cls(user=info.context.user)
+
+class LoginMutation(graphene.Mutation):
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    result = graphene.Field(LoginResultType)
+
+    def mutate(self, info, username, password):
+        pass
+        #try:
+        #user = {'username': input['username'], 'password': input['password']}
+        #serializer = JSONWebTokenSerializer(data=user)
+        #if serializer.is_valid():
+        #    token = serializer.object['token']
+        #    user = serializer.object['user']
+        #    result = LoginResultType(success=True, token=token, user=user)
+        #    return LoginMutation(result=result)
+        #else:
+        #    result = LoginResultType(success=False)
+        #    return LoginMutatuon(result=result)
+        #except:
+        #    print("Error logging in")
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
@@ -154,3 +186,5 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     create_account = CreateAccount.Field()
+    #login = LoginMutation.Field()
+    login = ObtainJSONWebToken.Field()
