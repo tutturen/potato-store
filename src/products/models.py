@@ -48,18 +48,19 @@ class PackageDeal(models.Model):
 
 class Product(models.Model):
     # Category, name, organic and notes
-    category = models.ForeignKey(Category,
-        related_name='products',
-        on_delete=models.CASCADE
-    )
     name = models.CharField(max_length=100)
-    organic = models.BooleanField()
-    notes = models.TextField()
+    subtitle = models.TextField()
+    image = models.CharField(max_length=255)
 
     # Product pricing
     price = models.FloatField("Price per product")
     unitPrice = models.FloatField("Unit price")
     unit = models.CharField("Unit type", max_length=30)
+    category = models.ForeignKey(Category,
+        related_name='products',
+        on_delete=models.CASCADE
+    )
+    organic = models.BooleanField()
 
     # Sale types
     percentSale = models.ForeignKey(PercentSale,
@@ -117,7 +118,7 @@ class Receipt(models.Model):
     )
 
     def __str__(self):
-        return str(self.cart)
+        return str(self.order)
 
 class User(models.Model):
     firstName = models.CharField("First name", max_length=100)

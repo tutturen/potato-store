@@ -41,9 +41,21 @@ class LoginResultType(graphene.ObjectType):
     token = graphene.String()
 
 
+class FilterInputType(graphene.InputObjectType):
+    text = graphene.String(required=False)
+    minPrice = graphene.Int(required=False)
+    maxPrice = graphene.Int(required=False)
+    category = graphene.List(graphene.ID, required=False)
+    onSale = graphene.Boolean(required=False)
+    organic = graphene.Boolean(required=False)
+
+
 class Query(graphene.ObjectType):
     all_categories = graphene.NonNull(graphene.List(graphene.NonNull(CategoryType)))
-    all_products = graphene.NonNull(graphene.List(graphene.NonNull(ProductType)))
+    all_products = graphene.Field(
+        type=graphene.NonNull(graphene.List(graphene.NonNull(ProductType))),
+        filter=graphene.Argument(FilterInputType)
+    )
     category = graphene.Field(CategoryType,
                               categoryName=graphene.String())
     cart = graphene.Field(CartType,
@@ -52,8 +64,29 @@ class Query(graphene.ObjectType):
     def resolve_all_categories(self, info):
         return Category.objects.all()
 
-    def resolve_all_products(self, info):
+    def resolve_all_products(self, info, filter={}):
+
+        field_mappings = {
+            'text': ['name', 'subtitle']
+        }
+
+        def search_fields(products, filterName, filterValue):
+            if filterName not in field_mappings:
+                return products
+
+            for mapping in field_mappings[filterName]:
+                kw = {mapping + '__contains': filterValue}
+                products = products.filter(**kw)
+
+            return products
+
         # We can easily optimize query count in the resolve method
+        products = Product.objects.all()
+        for field in filter:
+            print(field, filter[field])
+            products = search_fields(products, field, filter[field])
+
+        print(type(products))
         return Product.objects.select_related('category').all()
 
     def resolve_category(self, info, **kwargs):
