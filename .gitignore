@@ -174,3 +174,9 @@ venv.bak/
 
 # End of https://www.gitignore.io/api/node,django,python
 *.sqlite3
+
+# Ignore IntelliJ and friends from Jetbrains
+.idea/
+
+# Ignore swp files from Vim
+*.swp
