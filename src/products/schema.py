@@ -1,6 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from products.models import Category, Product, User, Cart
+from products.models import Category, Product, User, Cart, PercentSale, PackageDeal
 
 
 class CategoryType(DjangoObjectType):
@@ -24,6 +24,16 @@ class CartType(DjangoObjectType):
 
     class Meta:
         model = Cart
+
+
+class PercentSaleType(DjangoObjectType):
+    class Meta:
+        model = PercentSale
+
+
+class PackageDealType(DjangoObjectType):
+    class Meta:
+        model = PackageDeal
 
 
 class Query(graphene.ObjectType):

@@ -63,14 +63,14 @@ class Product(models.Model):
 
     # Sale types
     percentSale = models.ForeignKey(PercentSale,
-        related_name='products',
+        related_name='sales',
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
         verbose_name="Percentage-based sale"
         )
     packageDeal = models.ForeignKey(PackageDeal,
-        related_name='products',
+        related_name='sales',
         on_delete=models.DO_NOTHING,
         null=True,
         blank=True,
