@@ -8,21 +8,33 @@
   {
     "model": "products.product",
     "pk": 1,
-    "fields": { "name": "Eggs", "notes": "Good old eggs", "category": 1, "price": 15.99, "unitPrice": 1.99, "unit": "pc", "organic": false  }
+    "fields": {
+      "name": "Eggs", "subtitle": "Good old eggs",
+      "image": "https://kolonial.no/media/uploads/public/138/31/658431-59bd0-product_detail.jpg",
+      "category": 1, "price": 15.99, "unitPrice": 1.99, "unit": "pc", "organic": false  }
   },
   {
     "model": "products.product",
     "pk": 2,
-    "fields": { "name": "Milk", "notes": "Comes from a cow", "category": 1, "price": 15.49, "unitPrice": 15.49, "unit": "L", "organic": false }
+    "fields": {
+      "name": "Milk", "subtitle": "Comes from a cow",
+      "image": "https://kolonial.no/media/uploads/public/138/31/658431-59bd0-product_detail.jpg",
+      "category": 1, "price": 15.49, "unitPrice": 15.49, "unit": "L", "organic": false }
   },
   {
     "model": "products.product",
     "pk": 3,
-    "fields": { "name": "Beef", "notes": "Much like milk, this comes from a cow", "category": 2, "price": 49.99, "unitPrice": 49.99, "unit": "kg", "organic": false, "percentSale": 1 }
+    "fields": {
+      "name": "Beef", "subtitle": "Much like milk, this comes from a cow",
+      "image": "https://kolonial.no/media/uploads/public/138/31/658431-59bd0-product_detail.jpg",
+      "category": 2, "price": 49.99, "unitPrice": 49.99, "unit": "kg", "organic": false, "percentSale": 1 }
   },
   {
     "model": "products.product",
     "pk": 4,
-    "fields": { "name": "Chicken", "notes": "Definitely doesn't come from a cow", "category": 2, "price": 39.99, "unitPrice": 29.99, "unit": "kg", "organic": true, "packageDeal": 1  }
+    "fields": {
+      "name": "Chicken", "subtitle": "Definitely doesn't come from a cow",
+      "image": "https://kolonial.no/media/uploads/public/138/31/658431-59bd0-product_detail.jpg",
+      "category": 2, "price": 39.99, "unitPrice": 29.99, "unit": "kg", "organic": true, "packageDeal": 1  }
   }
 ]
