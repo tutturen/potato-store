@@ -1,0 +1,5 @@
+type LoginResult {
+  user: User
+  success: Boolean!
+  token: String!
+}

@@ -126,29 +126,8 @@ class User(models.Model):
     username = models.CharField("Username", max_length=50)
 
     def save(self, *args, **kwargs):
-        if not self.cart:
-            # Admin probably creating new user, create new cart too
-            cart = Order()
-            cart.totalBeforeDiscount = 0.0
-            cart.totalDiscount = 0.0
-            cart.total = 0.0
-
-            # Save the cart and attach it to our user
-            cart.save()
-            self.cart = cart
-
         super(User, self).save(*args, **kwargs)
 
     # Customize the name shown in the admin panel
     def __str__(self):
         return self.firstName + ' ' + self.lastName + ' (' + self.username + ')'
-
-# class LoginResult(models.Model):
-#     user = models.ForeignKey(User,
-#         on_delete=models.CASCADE
-#     )
-#     success = models.BooleanField()
-#     token = models.CharField(max_length=100)
-#
-#     def __str__(self):
-#         return str(self.user) + str(self.token)

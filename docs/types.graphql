@@ -4,6 +4,7 @@ type Query {
   category(categoryName: String): Category
   cart(products: [ID!]!): Cart
   user: User
+  createAccount(firstName: String!, lastName: String!, username: String!): LoginResult
 }
 
 type Mutation {
