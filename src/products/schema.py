@@ -1,8 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
-from django.db.models import Q
-from functools import reduce
 
 class CategoryType(DjangoObjectType):
     class Meta:
