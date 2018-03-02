@@ -1,7 +1,8 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
-from django.db.models.query import QuerySet
+from django.db.models import Q
+from functools import reduce
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -82,42 +83,77 @@ class Query(graphene.ObjectType):
 
     def resolve_all_products(self, info, filter={}):
 
+        # First phase of filtering is to check single-field
+        #  values of the filter
+        # text filter maps to name and subtitle, which
+        #  can be checked relationally
         field_mappings = {
             'text': ['name', 'subtitle'],
             'minPrice': ['price'],
-            'maxPrice': ['price']
+            'maxPrice': ['price'],
+            'organic': ['organic']
         }
 
-        def search_fields(products, filterName, filterValue):
+        # Create a kwargs object that can be filtered with,
+        #  relational operators vary per field
+        def search_fields(filterName, filterValue):
             if filterName not in field_mappings:
-                return products
+                return {}
 
-            new_products = None
+            kw = {}
             for mapping in field_mappings[filterName]:
-                kw = None
                 # Generate the filter
                 if filterName == 'text':
-                    kw = {mapping + '__contains': filterValue}
+                    kw.update({mapping + '__contains': filterValue})
                 elif filterName == 'minPrice':
-                    kw = {'price__gte': filterValue}
+                    kw.update({mapping + '__range': (filterValue, 1000)})
                 elif filterName == 'maxPrice':
-                    kw = {'price__lte': filterValue}
+                    kw.update({mapping + '__range': (0, filterValue)})
+                elif filterName == 'organic':
+                    kw.update({mapping: filterValue})
 
-                # Do the filtering and union
-                print(kw)
-                if new_products is not None:
-                    new_products = new_products.union(products.filter(**kw))
-                else:
-                    new_products = products.filter(**kw)
+            return kw
 
-            return new_products
-
-        # We can easily optimize query count in the resolve method
+        # For text field, we must perform a union of
+        #  name and subtitle results
+        # For other fields, just perform intersection of results
         products = Product.objects.all()
+        # filter_info = {}
         for field in filter:
-            products = search_fields(products, field, filter[field])
+            q = search_fields(field, filter[field])
+            # If no filter was created, skip
+            # Otherwise we get empty results
+            if len(q) == 0:
+                continue
+            qset = None
+            for constraint in q:
+                if qset is None:
+                    qset = products.filter(**{constraint: q[constraint]})
+                else:
+                    qset = qset | products.filter(**{constraint: q[constraint]})
 
-        print(type(products), len(products))
+            products = qset
+
+        # Check whether product's category is queried
+        # We need to do a union on this field, but intersection with previous results
+        if 'category' in filter and products is not None:
+            categories = filter['category']
+            qset = None
+            for cat in categories:
+                kw = {'category': cat}
+                if qset is None:
+                    qset = products.filter(**kw)
+                else:
+                    qset = qset | products.filter(**kw)
+            products = qset
+
+        if 'onSale' in filter and filter['onSale']:
+            products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
+
+        # As a safety net, is products has become empty
+        if products is None:
+            products = []
+
         return products
 
     def resolve_category(self, info, **kwargs):
