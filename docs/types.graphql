@@ -47,6 +47,14 @@ type Cart {
   total: Float!
 }
 
+type Order {
+  products: [Product!]!
+  totalBeforeDiscount: Float!
+  totalDiscount: Float!
+  total: Float!
+  user: User
+}
+
 type Category {
   id: ID
   name: String
