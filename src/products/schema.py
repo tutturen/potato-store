@@ -1,6 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from products.models import Category, Product, User, Cart, PercentSale, PackageDeal
+from products.models import Category, Product, User, PercentSale, PackageDeal
 
 
 class CategoryType(DjangoObjectType):
@@ -18,14 +18,6 @@ class UserType(DjangoObjectType):
         model = User
 
 
-class CartType(DjangoObjectType):
-
-    products = graphene.List(lambda: ProductType)
-
-    class Meta:
-        model = Cart
-
-
 class PercentSaleType(DjangoObjectType):
     class Meta:
         model = PercentSale
@@ -34,6 +26,19 @@ class PercentSaleType(DjangoObjectType):
 class PackageDealType(DjangoObjectType):
     class Meta:
         model = PackageDeal
+
+
+class CartType(graphene.ObjectType):
+    products = graphene.List(lambda: ProductType)
+    totalBeforeDiscount = graphene.Float()
+    totalDiscount = graphene.Float()
+    total = graphene.Float()
+
+
+class LoginResultType(graphene.ObjectType):
+    user = UserType
+    success = graphene.Boolean()
+    token = graphene.String()
 
 
 class Query(graphene.ObjectType):

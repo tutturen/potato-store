@@ -96,18 +96,22 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class Cart(models.Model):
+class Order(models.Model):
     products = models.ManyToManyField(Product)
     totalBeforeDiscount = models.FloatField()
     totalDiscount = models.FloatField()
     total = models.FloatField()
+    user = models.ForeignKey('User',
+        related_name='products',
+        on_delete=models.CASCADE
+        )
 
     def __str__(self):
         return 'This user has ' + str(self.products.count()) + ' items in the cart'
 
 class Receipt(models.Model):
     success = models.BooleanField()
-    cart = models.ForeignKey(Cart,
+    order = models.ForeignKey(Order,
         # related_name='products',
         on_delete=models.CASCADE
     )
@@ -119,18 +123,11 @@ class User(models.Model):
     firstName = models.CharField("First name", max_length=100)
     lastName = models.CharField("Last name", max_length=100)
     username = models.CharField("Username", max_length=50)
-    cart = models.ForeignKey(Cart,
-        # related_name='products',
-        on_delete=models.CASCADE,
-        # We need to allow this field to be null in the admin, fixing it in save
-        null=True,
-        blank=True
-    )
 
     def save(self, *args, **kwargs):
         if not self.cart:
             # Admin probably creating new user, create new cart too
-            cart = Cart()
+            cart = Order()
             cart.totalBeforeDiscount = 0.0
             cart.totalDiscount = 0.0
             cart.total = 0.0
@@ -145,12 +142,12 @@ class User(models.Model):
     def __str__(self):
         return self.firstName + ' ' + self.lastName + ' (' + self.username + ')'
 
-class LoginResult(models.Model):
-    user = models.ForeignKey(User,
-        on_delete=models.CASCADE
-    )
-    success = models.BooleanField()
-    token = models.CharField(max_length=100)
-
-    def __str__(self):
-        return str(self.user) + str(self.token)
+# class LoginResult(models.Model):
+#     user = models.ForeignKey(User,
+#         on_delete=models.CASCADE
+#     )
+#     success = models.BooleanField()
+#     token = models.CharField(max_length=100)
+#
+#     def __str__(self):
+#         return str(self.user) + str(self.token)
