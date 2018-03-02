@@ -3,6 +3,8 @@ import graphql_jwt
 import django
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, User, PercentSale, PackageDeal
+from django.db.models import Q
+from functools import reduce
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -90,8 +92,8 @@ class LoginMutation(graphene.Mutation):
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
-    minPrice = graphene.Int(required=False)
-    maxPrice = graphene.Int(required=False)
+    minPrice = graphene.Float(required=False)
+    maxPrice = graphene.Float(required=False)
     category = graphene.List(graphene.ID, required=False)
     onSale = graphene.Boolean(required=False)
     organic = graphene.Boolean(required=False)
@@ -113,28 +115,78 @@ class Query(graphene.ObjectType):
 
     def resolve_all_products(self, info, filter={}):
 
+        # First phase of filtering is to check single-field
+        #  values of the filter
+        # text filter maps to name and subtitle, which
+        #  can be checked relationally
         field_mappings = {
-            'text': ['name', 'subtitle']
+            'text': ['name', 'subtitle'],
+            'minPrice': ['price'],
+            'maxPrice': ['price'],
+            'organic': ['organic']
         }
 
-        def search_fields(products, filterName, filterValue):
+        # Create a kwargs object that can be filtered with,
+        #  relational operators vary per field
+        def search_fields(filterName, filterValue):
             if filterName not in field_mappings:
-                return products
+                return {}
 
+            kw = {}
             for mapping in field_mappings[filterName]:
-                kw = {mapping + '__contains': filterValue}
-                products = products.filter(**kw)
+                # Generate the filter
+                if filterName == 'text':
+                    kw.update({mapping + '__contains': filterValue})
+                elif filterName == 'minPrice':
+                    kw.update({mapping + '__range': (filterValue, 1000)})
+                elif filterName == 'maxPrice':
+                    kw.update({mapping + '__range': (0, filterValue)})
+                elif filterName == 'organic':
+                    kw.update({mapping: filterValue})
 
-            return products
+            return kw
 
-        # We can easily optimize query count in the resolve method
+        # For text field, we must perform a union of
+        #  name and subtitle results
+        # For other fields, just perform intersection of results
         products = Product.objects.all()
+        # filter_info = {}
         for field in filter:
-            print(field, filter[field])
-            products = search_fields(products, field, filter[field])
+            q = search_fields(field, filter[field])
+            # If no filter was created, skip
+            # Otherwise we get empty results
+            if len(q) == 0:
+                continue
+            qset = None
+            for constraint in q:
+                if qset is None:
+                    qset = products.filter(**{constraint: q[constraint]})
+                else:
+                    qset = qset | products.filter(**{constraint: q[constraint]})
 
-        print(type(products))
-        return Product.objects.select_related('category').all()
+            products = qset
+
+        # Check whether product's category is queried
+        # We need to do a union on this field, but intersection with previous results
+        if 'category' in filter and products is not None:
+            categories = filter['category']
+            qset = None
+            for cat in categories:
+                kw = {'category': cat}
+                if qset is None:
+                    qset = products.filter(**kw)
+                else:
+                    qset = qset | products.filter(**kw)
+            products = qset
+
+        if 'onSale' in filter and filter['onSale']:
+            products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
+
+        # As a safety net, is products has become empty
+        if products is None:
+            products = []
+
+        return products
 
     def resolve_category(self, info, **kwargs):
         try:

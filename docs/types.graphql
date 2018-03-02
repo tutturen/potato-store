@@ -27,7 +27,6 @@ type User {
   firstName: String!
   lastName: String!
   username: String!
-  cart: Cart!
 }
 
 type LoginResult {
@@ -46,6 +45,14 @@ type Cart {
   totalBeforeDiscount: Float!
   totalDiscount: Float!
   total: Float!
+}
+
+type Order {
+  products: [Product!]!
+  totalBeforeDiscount: Float!
+  totalDiscount: Float!
+  total: Float!
+  user: User
 }
 
 type Category {
