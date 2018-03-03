@@ -2,7 +2,7 @@ import graphene
 import graphql_jwt
 import django
 from graphene_django.types import DjangoObjectType
-from products.models import Category, Product, User, PercentSale, PackageDeal
+from products.models import Category, Product, PercentSale, PackageDeal
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -20,7 +20,6 @@ class PercentSaleType(DjangoObjectType):
     class Meta:
         model = PercentSale
 
-
 class PackageDealType(DjangoObjectType):
     class Meta:
         model = PackageDeal
@@ -32,61 +31,47 @@ class CartType(graphene.ObjectType):
     total = graphene.Float()
 
 class LoginResultType(graphene.ObjectType):
-    user = UserType
+    user = graphene.Field(UserType)
     success = graphene.Boolean()
     token = graphene.String()
 
-class CreateAccount(graphene.Mutation):
+class CreateAccountMutation(graphene.Mutation, LoginResultType):
+    #
+    # https://stackoverflow.com/questions/10372877/how-to-create-a-user-in-django
+    # https://docs.djangoproject.com/en/2.0/ref/contrib/auth/#django.contrib.auth.models.UserManager.create_user
+    #
     class Arguments:
         firstName = graphene.String(required=True)
         lastName = graphene.String(required=True)
         username = graphene.String(required=True)
 
-    result = graphene.Field(LoginResultType)
-
     def mutate(self, info, firstName, lastName, username):
+        # Try to create a new user and calculate a token
         try:
-            user = User.objects.create (
-                firstName = firstName,
-                lastName = lastName,
-                username = username)
+            # Create new user object with bullshit password
+            user = django.contrib.auth.models.User.objects.create_user (
+                first_name = firstName,
+                last_name = lastName,
+                username = username,
+                password = "asdfasdf")
+
+            # Try saving it to db
             user.save()
-            result = LoginResultType(success=True, token="This is a token muhaha")
-            return CreateAccount(result=result)
+
+            # Calculate the token (ffs)
+            tok = graphql_jwt.shortcuts.get_token(user)
+
+            # Return the created user, success flag and token
+            return CreateAccountMutation(user=user, success=True, token=tok)
         except:
-            print("Failed to create user")
-            result = LoginResultType(success=False)
-            return CreateAccount(result=result)
+            # Most likely, the user already exists
+            # Return blank user and token with success set false
+            return CreateAccountMutation(user=None, success=False, token="")
 
-class ObtainJSONWebToken(graphql_jwt.JSONWebTokenMutation):
-    user = graphene.Field(UserType)
-
+class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
     @classmethod
     def resolve(cls, root, info):
-        return cls(user=info.context.user)
-
-class LoginMutation(graphene.Mutation):
-    class Arguments:
-        username = graphene.String(required=True)
-        password = graphene.String(required=True)
-
-    result = graphene.Field(LoginResultType)
-
-    def mutate(self, info, username, password):
-        pass
-        #try:
-        #user = {'username': input['username'], 'password': input['password']}
-        #serializer = JSONWebTokenSerializer(data=user)
-        #if serializer.is_valid():
-        #    token = serializer.object['token']
-        #    user = serializer.object['user']
-        #    result = LoginResultType(success=True, token=token, user=user)
-        #    return LoginMutation(result=result)
-        #else:
-        #    result = LoginResultType(success=False)
-        #    return LoginMutatuon(result=result)
-        #except:
-        #    print("Error logging in")
+        return LoginMutation(user=info.context.user, success=True)
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
@@ -235,6 +220,5 @@ class Query(graphene.ObjectType):
         return cart
 
 class Mutation(graphene.ObjectType):
-    create_account = CreateAccount.Field()
-    #login = LoginMutation.Field()
-    login = ObtainJSONWebToken.Field()
+    createAccount = CreateAccountMutation.Field()
+    login = LoginMutation.Field()

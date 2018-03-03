@@ -22,19 +22,6 @@ type FilterInput {
   organic: Boolean
 }
 
-type User {
-  id: ID!
-  firstName: String!
-  lastName: String!
-  username: String!
-}
-
-type LoginResult {
-  user: User
-  success: Boolean!
-  token: String
-}
-
 type Receipt {
   cart: Cart
   success: Boolean!
