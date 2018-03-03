@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Test of cross-origin resource sharing</title>
+
+        <script
+          src="http://code.jquery.com/jquery-3.3.1.min.js"
+          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+          crossorigin="anonymous"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('#thebutton').click(function() {
+                    $.ajax('http://localhost:8000/graphql', {
+                        success: function() {
+                            console.log('Success');
+                        },
+                        error: function(err, typeOfError, errorText) {
+                            console.warn('' + typeOfError + ': ' + errorText);
+                        },
+                        jsonp: false,
+                        dataType: 'json',
+                    });
+                });
+            });
+        </script>
+
+    </head>
+
+    <body>
+        <h1>Test of cross-origin resource sharing</h1>
+        <button id="thebutton">The button</button>
+        <p>The button is set up to contact <code>http://localhost:8000/graphql</code> through AJAX when clicked.
+           If you run the backend to be tested at localhost port 8000, you can use this page to test whether
+           the request is allowed by the web browser.</p>
+        <p>Access this page through a webserver, like <code>python3 -m http.server --bind 127.0.0.1 3000</code>.</p>
+        <p>Use the browser's developer tools to monitor the success or failure of the request. In Firefox, you
+           will get a warning in the Console about the request being blocked due to CORS. You should also check the Network tab,
+           to confirm the headers are set correctly by the backend.</p>
+        <p>To simulate different origins, you may either use the <code>/etc/hosts</code> file on your system (or an
+           equivalent) or edit the request in the Network tools of your web browser and change the Origin request header.</p>
+    </body>
+</html>
