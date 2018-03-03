@@ -61,6 +61,9 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
             # Calculate the token (ffs)
             tok = graphql_jwt.shortcuts.get_token(user)
 
+            # Hide password
+            user.password = "Hidden"
+
             # Return the created user, success flag and token
             return CreateAccountMutation(user=user, success=True, token=tok)
         except:
@@ -71,7 +74,9 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
 class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
     @classmethod
     def resolve(cls, root, info):
-        return LoginMutation(user=info.context.user, success=True)
+        user = info.context.user
+        user.password = "Hidden"
+        return LoginMutation(user=user, success=True)
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
