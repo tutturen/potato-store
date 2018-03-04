@@ -257,7 +257,7 @@ class Query(graphene.ObjectType):
 
         # Check whether product's category is queried
         # We need to do a union on this field, but intersection with previous results
-        if 'category' in filter and products is not None:
+        if 'category' in filter and filter['category'] is not None and products is not None:
             categories = filter['category']
             qset = None
             for cat in categories:
@@ -268,7 +268,7 @@ class Query(graphene.ObjectType):
                     qset = qset | products.filter(**kw)
             products = qset
 
-        if 'onSale' in filter and filter['onSale']:
+        if 'onSale' in filter and filter['onSale'] and products is not None:
             products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
 
         # As a safety net, is products has become empty
