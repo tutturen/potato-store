@@ -65,7 +65,9 @@ ROOT_URLCONF = 'potatostore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            'potatostore/templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -151,4 +153,16 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
 )
 # Apply CORS headers only to the GraphQL API, not the admin pages
-CORS_URLS_REGEX = r'^/graphql/?.*$'
+CORS_URLS_REGEX = r'^(?:/graphql/?.*)|(?:/)$'
+# Let cookies be included in cross-site requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow CSRF from more than just the pages served by the backend
+CSRF_TRUSTED_ORIGINS = [
+    # Allow the deployed React application to use CSRF
+    'tutturen.github.io',
+    # Allow then developing locally
+    'localhost:3000',
+    'localhost:8000',
+    'localhost:8080',
+]
