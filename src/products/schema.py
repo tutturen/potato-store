@@ -245,7 +245,9 @@ class Query(graphene.ObjectType):
                     qset = products.filter(**kw)
                 else:
                     qset = qset | products.filter(**kw)
-            products = qset
+            
+            if qset is None:
+                products = qset
 
         if 'onSale' in filter and filter['onSale'] and products is not None:
             products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
