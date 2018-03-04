@@ -65,3 +65,18 @@ A typical run would be done by (when starting in the git source directory):
     ./manage.py loaddata ./products/fixtures/products.json
     ./manage.py migrate
     ./manage.py runserver
+
+When the server is up, you can interact with it at several endpoints:
+
+ - `/admin`   - Django administrator panel
+ - `/graphql` - GraphiQL interface for doing queries directly against the database
+ - `/`        - Mostly just help
+
+### Relevant source files
+
+Most of the code done in this project can be found in:
+
+ - `src/products/models.py` - Django models, persistent data structures for the database
+ - `src/products/schema.py` - Exposing Django models to GraphQL along with validation
+ - `src/products/admin.py`  - Data definition for Django's administrator panel
+ 
