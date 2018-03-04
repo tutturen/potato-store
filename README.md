@@ -53,17 +53,19 @@ Platform-specific instructions vary in this case.
 
 Django is controlled through the `./manage.py` file, which exposes several commands, but the following are relevant:
 
-    runserver - run the server locally, by default on localhost:8000
-    migrate   - applies changes made to database structures to the current database,
-                 also creates the tables if the do not exist
-    loaddata  - using provided data fixtures, add some dummy data to the database
+    runserver       - run the server locally, by default on localhost:8000
+    migrate         - applies changes made to database structures to the current database,
+                       also creates the tables if the do not exist
+    loaddata        - using provided data fixtures, add some dummy data to the database
+    createsuperuser - create administrator user for database, use this before trying to access the /admin endpoint
 
 A typical run would be done by (when starting in the git source directory):
 
     cd src/
     pipenv shell
     ./manage.py loaddata ./products/fixtures/products.json
-    ./manage.py migrate
+    ./manage.py createsuperuser # creates admin account
+    ./manage.py migrate # creates database tables
     ./manage.py runserver
 
 When the server is up, you can interact with it at several endpoints:
