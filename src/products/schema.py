@@ -89,8 +89,9 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
         firstName = graphene.String(required=True)
         lastName = graphene.String(required=True)
         username = graphene.String(required=True)
+        password = graphene.String(required=True)
 
-    def mutate(self, info, firstName, lastName, username):
+    def mutate(self, info, firstName, lastName, username, password):
         # Try to create a new user and calculate a token
         try:
             # Create new user object with bullshit password
@@ -98,7 +99,7 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
                 first_name = firstName,
                 last_name = lastName,
                 username = username,
-                password = "asdfasdf")
+                password = password)
 
             # Try saving it to db
             user.save()
