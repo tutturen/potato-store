@@ -67,6 +67,30 @@ class CartType(graphene.ObjectType):
                 cart.totalDiscount += query[0].price - saleprice
                 cart.total += saleprice
 
+        # Create lists: k is unique products, v is the frequency
+        d = {x:dbproducts.count(x) for x in dbproducts}
+        pairs = [(k, v) for (k, v) in d.items()]
+
+        # Loop through to find package deals
+        for item in pairs:
+            # Check if the item has a package deal
+            if item[0].packageDeal:
+                # Calculate how many times we have to apply it
+                num = int(item[1] / item[0].packageDeal.minimumQuantity)
+
+                # Calculate the number of items to reduce per deal
+                rem = int(item[0].packageDeal.minimumQuantity - item[0].packageDeal.paidQuantity)
+
+                # Multiply with number of deals
+                torem = rem * num
+
+                # Calculate the price value to remove
+                value = torem * item[0].price
+
+                # Add to discount and remove from total
+                cart.totalDiscount += value;
+                cart.total -= value;
+
         # Return cart with products
         cart.products = dbproducts
         return cart
