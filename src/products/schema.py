@@ -1,6 +1,8 @@
 import graphene
+import graphql_jwt
+import django
 from graphene_django.types import DjangoObjectType
-from products.models import Category, Product, User, PercentSale, PackageDeal
+from products.models import Category, Product, PercentSale, PackageDeal, Order
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -12,12 +14,11 @@ class ProductType(DjangoObjectType):
 
 class UserType(DjangoObjectType):
     class Meta:
-        model = User
+        model = django.contrib.auth.models.User
 
 class PercentSaleType(DjangoObjectType):
     class Meta:
         model = PercentSale
-
 
 class PackageDealType(DjangoObjectType):
     class Meta:
@@ -29,32 +30,129 @@ class CartType(graphene.ObjectType):
     totalDiscount = graphene.Float()
     total = graphene.Float()
 
+    def processcart(products):
+        # Product IDs requested and results to return
+        dbproducts = []
+
+        # Create empty cart type
+        cart = CartType(totalBeforeDiscount=0,
+                        totalDiscount=0,
+                        total=0)
+
+        # For every product requested
+        for productId in products:
+            # Query the database
+            query = Product.objects.filter(id=productId)
+
+            # Add all to the result list
+            dbproducts = dbproducts + [x for x in query]
+
+            # Calculate prices if possible
+            if len(query) != 0:
+                # Add item price
+                cart.totalBeforeDiscount += query[0].price
+
+                # Default no sale
+                saleprice = query[0].price
+
+                # If there are discounts
+                if query[0].percentSale:
+                    saleprice = query[0].price * query[0].percentSale.cut * 0.01
+                if query[0].packageDeal:
+                    # We need to count stuff then divide by minimum quantity
+                    # to figure out how many times to apply the paid quantity.
+                    pass
+
+                # At last add sum
+                cart.totalDiscount += query[0].price - saleprice
+                cart.total += saleprice
+
+        # Return cart with products
+        cart.products = dbproducts
+        return cart
+
 class LoginResultType(graphene.ObjectType):
-    user = UserType
+    user = graphene.Field(UserType)
     success = graphene.Boolean()
     token = graphene.String()
 
-class CreateAccount(graphene.Mutation):
+class ReceiptType(graphene.ObjectType):
+    cart = graphene.Field(CartType)
+    success = graphene.Boolean()
+
+class CreateAccountMutation(graphene.Mutation, LoginResultType):
+    #
+    # https://stackoverflow.com/questions/10372877/how-to-create-a-user-in-django
+    # https://docs.djangoproject.com/en/2.0/ref/contrib/auth/#django.contrib.auth.models.UserManager.create_user
+    #
     class Arguments:
         firstName = graphene.String(required=True)
         lastName = graphene.String(required=True)
         username = graphene.String(required=True)
 
-    result = graphene.Field(LoginResultType)
-
     def mutate(self, info, firstName, lastName, username):
+        # Try to create a new user and calculate a token
         try:
-            user = User.objects.create (
-                firstName = firstName,
-                lastName = lastName,
-                username = username)
+            # Create new user object with bullshit password
+            user = django.contrib.auth.models.User.objects.create_user (
+                first_name = firstName,
+                last_name = lastName,
+                username = username,
+                password = "asdfasdf")
+
+            # Try saving it to db
             user.save()
-            result = LoginResultType(success=True, token="This is a token muhaha")
-            return CreateAccount(result=result)
+
+            # Calculate the token (ffs)
+            tok = graphql_jwt.shortcuts.get_token(user)
+
+            # Hide password
+            user.password = "Hidden"
+
+            # Return the created user, success flag and token
+            return CreateAccountMutation(user=user, success=True, token=tok)
         except:
-            print("Failed to create user")
-            result = LoginResultType(success=False)
-            return CreateAccount(result=result)
+            # Most likely, the user already exists
+            # Return blank user and token with success set false
+            return CreateAccountMutation(user=None, success=False, token="")
+
+class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
+    @classmethod
+    def resolve(cls, root, info):
+        user = info.context.user
+        user.password = "Hidden"
+        return LoginMutation(user=user, success=True)
+
+class BuyMutation(graphene.Mutation, ReceiptType):
+    class Arguments:
+        products = graphene.NonNull(graphene.List(graphene.ID))
+
+    def mutate(self, info, **kwargs):
+        # Check authentication first, if not logged in return unsuccessful buy
+        if info.context.user.is_anonymous:
+            return BuyMutation(cart=None, success=False)
+        else:
+            # Process the supplied product ids into a cart
+            cart = CartType.processcart(kwargs['products'])
+
+            # Create an order
+            order = Order()
+            order.totalBeforeDiscount = cart.totalBeforeDiscount
+            order.totalDiscount = cart.totalDiscount
+            order.total = cart.total
+            order.user = info.context.user
+
+            # Save the order
+            order.save()
+
+            # Set products
+            products = []
+            for x in cart.products:
+                products = products + [x]
+            order.products.set(products)
+
+            # Return a successful buy operation
+            return BuyMutation(cart=cart, success=True)
 
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
@@ -161,46 +259,10 @@ class Query(graphene.ObjectType):
             return None
 
     def resolve_cart(self, info, **kwargs):
-        # Product IDs requested and results to return
-        products = kwargs['products']
-        dbproducts = []
-
-        # Create empty cart type
-        cart = CartType(totalBeforeDiscount=0,
-                        totalDiscount=0,
-                        total=0)
-
-        # For every product requested
-        for productId in products:
-            # Query the database
-            query = Product.objects.filter(id=productId)
-
-            # Add all to the result list
-            dbproducts = dbproducts + [x for x in query]
-
-            # Calculate prices if possible
-            if len(query) != 0:
-                # Add item price
-                cart.totalBeforeDiscount += query[0].price
-
-                # Default no sale
-                saleprice = query[0].price
-
-                # If there are discounts
-                if query[0].percentSale:
-                    saleprice = query[0].price * query[0].percentSale.cut * 0.01
-                if query[0].packageDeal:
-                    # We need to count stuff then divide by minimum quantity
-                    # to figure out how many times to apply the paid quantity.
-                    pass
-
-                # At last add sum
-                cart.totalDiscount += query[0].price - saleprice
-                cart.total += saleprice
-
-        # Return cart with products
-        cart.products = dbproducts
+        cart = CartType.processcart(kwargs['products'])
         return cart
 
 class Mutation(graphene.ObjectType):
-    create_account = CreateAccount.Field()
+    createAccount = CreateAccountMutation.Field()
+    login = LoginMutation.Field()
+    buy = BuyMutation.Field()

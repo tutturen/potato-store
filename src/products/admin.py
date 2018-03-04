@@ -1,5 +1,5 @@
 from django.contrib import admin
-from products.models import Product, Category, User, PercentSale, PackageDeal
+from products.models import Product, Category, User, PercentSale, PackageDeal, Order
 
 class CategoryAdmin(admin.ModelAdmin):
     # A category contains only a name, no need to customize
@@ -15,7 +15,7 @@ class PackageDealAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Product', {'fields': ['category', 'name', 'organic', 'notes']}),
+        ('Product', {'fields': ['category', 'name', 'organic', 'subtitle']}),
         ('Pricing', {'fields': ['price', 'unitPrice', 'unit']}),
         ('Sale', {'fields': ['percentSale', 'packageDeal']})
     ]
@@ -27,8 +27,12 @@ class UserAdmin(admin.ModelAdmin):
     def cart(self, obj):
         return 'Secrets! {}'.format(obj.cart)
 
+class OrderAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(PercentSale, PercentSaleAdmin)
 admin.site.register(PackageDeal, PackageDealAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(User, UserAdmin)
+admin.site.register(Order, OrderAdmin)
