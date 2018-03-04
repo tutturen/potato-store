@@ -223,6 +223,9 @@ class Query(graphene.ObjectType):
 
             kw = {}
             for mapping in field_mappings[filterName]:
+                if filterValue is None:
+                    continue
+
                 # Generate the filter
                 if filterName == 'text':
                     kw.update({mapping + '__contains': filterValue})
