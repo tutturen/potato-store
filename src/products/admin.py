@@ -15,7 +15,7 @@ class PackageDealAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Product', {'fields': ['category', 'name', 'organic', 'subtitle']}),
+        ('Product', {'fields': ['category', 'name', 'organic', 'subtitle', 'image']}),
         ('Pricing', {'fields': ['price', 'unitPrice', 'unit']}),
         ('Sale', {'fields': ['percentSale', 'packageDeal']})
     ]
