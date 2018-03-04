@@ -1,15 +1,30 @@
 type Query {
-
+  allProducts(filter: FilterInput): [Product!]!
+  allCategories: [Category!]!
+  category(categoryName: String): Category
+  cart(products: [ID!]!): Cart
+  user: User
+  createAccount(firstName: String!, lastName: String!, username: String!): LoginResult
 }
 
 type Mutation {
-
+  createAccount(username: String!, password: String!): LoginResult!
+  login(username: String!, password: String!): LoginResult!
+  buy(products: [ID!]!): Receipt!
 }
 
-type User {
-  id: ID!
-  username: String!
-  cart: Cart!
+type FilterInput {
+  text: String
+  minPrice: Int
+  maxPrice: Int
+  category: [ID]
+  onSale: Boolean
+  organic: Boolean
+}
+
+type Receipt {
+  cart: Cart
+  success: Boolean!
 }
 
 type Cart {
@@ -17,6 +32,14 @@ type Cart {
   totalBeforeDiscount: Float!
   totalDiscount: Float!
   total: Float!
+}
+
+type Order {
+  products: [Product!]!
+  totalBeforeDiscount: Float!
+  totalDiscount: Float!
+  total: Float!
+  user: User
 }
 
 type Category {
@@ -35,4 +58,17 @@ type Product {
   unit: String
   category: Category
   organic: Boolean!
+  percentSale: PercentSale
+  packageDeal: PackageDeal
+}
+
+type PercentSale {
+  product: Product!
+  cut: Int
+}
+
+type PackageDeal {
+  product: [Product!]!
+  paidQuantity: Int!
+  minimumQuantity: Int!
 }

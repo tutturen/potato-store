@@ -1,18 +1,18 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5b230a22e39779d5cf33078784e0f87ab9169e6864362deb8af725bba90b1d5a"
+            "sha256": "8bbed66f8a7cca708a3eff935ad6316b99348d3b41ba0e7e8f4939cba8da2913"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "3.6.3",
+            "implementation_version": "3.6.4",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.14.13-300.fc27.x86_64",
+            "platform_release": "4.4.0-21-generic",
             "platform_system": "Linux",
-            "platform_version": "#1 SMP Thu Jan 11 04:00:01 UTC 2018",
-            "python_full_version": "3.6.3",
+            "platform_version": "#37-Ubuntu SMP Mon Apr 18 18:33:37 UTC 2016",
+            "python_full_version": "3.6.4",
             "python_version": "3.6",
             "sys_platform": "linux"
         },
@@ -42,6 +42,27 @@
                 "sha256:9614851d4a7ff8cbd32b73c6076441f377c45a5bbff7e771798fb02c43c31f47"
             ],
             "version": "==2.0"
+        },
+        "django-cors-headers": {
+            "hashes": [
+                "sha256:0e9532628b3aa8806442d4d0b15e56112e6cfbef3735e13401935c98b842a2b4",
+                "sha256:c7ec4816ec49416517b84f317499d1519db62125471922ab78d670474ed9b987"
+            ],
+            "version": "==2.2.0"
+        },
+        "django-environ": {
+            "hashes": [
+                "sha256:e9c171b9d5f540e6f3bc42866941d9cd0bd77fb110a7c13a7c4857a2c08cfa40",
+                "sha256:ee2f8405d83137e3328b26b3de01bd715b5395fca22feb919dcc905fb6099cfa"
+            ],
+            "version": "==0.4.4"
+        },
+        "django-graphql-jwt": {
+            "hashes": [
+                "sha256:9126bdf095e6c199ade6682106ab5d3e32af94fbfe0e24de36f6613050ae4306",
+                "sha256:3af826631bd710ac1bdd3c7f796259f274a855514d26157b466bb82299b38eed"
+            ],
+            "version": "==0.1.5"
         },
         "graphene": {
             "hashes": [
@@ -127,6 +148,13 @@
                 "sha256:5c3213be557d0468f9df8fe2487eaf2990d9799202c5ff5cb8d394d09fad9b2a"
             ],
             "version": "==2.7.3.2"
+        },
+        "pyjwt": {
+            "hashes": [
+                "sha256:b752500cafd4df9f0dc6efe9063603e36a4e1a5c24fee48234d2949b6606aa59",
+                "sha256:9c3016e4a292151c5396e25cc0c28c4e1cdf13fa19118eb84f500f9670e3f628"
+            ],
+            "version": "==1.6.0"
         },
         "pytz": {
             "hashes": [

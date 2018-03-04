@@ -29,6 +29,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,7 @@ GRAPHENE = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,6 +58,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'graphql_jwt.middleware.JSONWebTokenMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'potatostore.urls'
@@ -63,7 +71,9 @@ ROOT_URLCONF = 'potatostore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            'potatostore/templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,3 +147,28 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Cross Origin Resource Sharing options,
+# see https://github.com/ottoyiu/django-cors-headers
+CORS_ORIGIN_WHITELIST = (
+    # Allow the deployed React application to access our site
+    'tutturen.github.io',
+    # Allow when developing locally
+    'localhost:3000',
+    'localhost:8000',
+    'localhost:8080',
+)
+# Apply CORS headers only to the GraphQL API, not the admin pages
+CORS_URLS_REGEX = r'^(?:/graphql/?.*)|(?:/)$'
+# Let cookies be included in cross-site requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow CSRF from more than just the pages served by the backend
+CSRF_TRUSTED_ORIGINS = [
+    # Allow the deployed React application to use CSRF
+    'tutturen.github.io',
+    # Allow then developing locally
+    'localhost:3000',
+    'localhost:8000',
+    'localhost:8080',
+]
