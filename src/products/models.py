@@ -1,5 +1,7 @@
+import django
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User as DjangoUser
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -102,13 +104,13 @@ class Order(models.Model):
     totalBeforeDiscount = models.FloatField()
     totalDiscount = models.FloatField()
     total = models.FloatField()
-    user = models.ForeignKey('User',
+    user = models.ForeignKey(DjangoUser,
         related_name='products',
         on_delete=models.CASCADE
         )
 
     def __str__(self):
-        return 'This user has ' + str(self.products.count()) + ' items in the cart'
+        return 'This cart has ' + str(self.products.count()) + ' items, price total ' + str(self.total) + ' kr'
 
 class Receipt(models.Model):
     success = models.BooleanField()
