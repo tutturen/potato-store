@@ -1,6 +1,7 @@
 import graphene
 import graphql_jwt
 import django
+from math import inf
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, PercentSale, PackageDeal, Order
 
@@ -217,21 +218,24 @@ class Query(graphene.ObjectType):
 
         # Create a kwargs object that can be filtered with,
         #  relational operators vary per field
-        def search_fields(filterName, filterValue):
-            if filterName not in field_mappings:
+        def search_fields(filter_name, filter_value):
+            if filter_name not in field_mappings:
                 return {}
 
             kw = {}
-            for mapping in field_mappings[filterName]:
+            for mapping in field_mappings[filter_name]:
+                if filter_value is None:
+                    continue
+
                 # Generate the filter
-                if filterName == 'text':
-                    kw.update({mapping + '__contains': filterValue})
-                elif filterName == 'minPrice':
-                    kw.update({mapping + '__range': (filterValue, 1000)})
-                elif filterName == 'maxPrice':
-                    kw.update({mapping + '__range': (0, filterValue)})
-                elif filterName == 'organic':
-                    kw.update({mapping: filterValue})
+                if filter_name == 'text':
+                    kw.update({mapping + '__contains': filter_value.lower()})
+                elif filter_name == 'minPrice':
+                    kw.update({mapping + '__range': (filter_value, inf)})
+                elif filter_name == 'maxPrice':
+                    kw.update({mapping + '__range': (0, filter_value)})
+                elif filter_name == 'organic':
+                    kw.update({mapping: filter_value})
 
             return kw
 
@@ -239,7 +243,6 @@ class Query(graphene.ObjectType):
         #  name and subtitle results
         # For other fields, just perform intersection of results
         products = Product.objects.all()
-        # filter_info = {}
         for field in filter:
             q = search_fields(field, filter[field])
             # If no filter was created, skip
@@ -257,7 +260,7 @@ class Query(graphene.ObjectType):
 
         # Check whether product's category is queried
         # We need to do a union on this field, but intersection with previous results
-        if 'category' in filter and products is not None:
+        if 'category' in filter and filter['category'] is not None and products is not None:
             categories = filter['category']
             qset = None
             for cat in categories:
@@ -266,9 +269,11 @@ class Query(graphene.ObjectType):
                     qset = products.filter(**kw)
                 else:
                     qset = qset | products.filter(**kw)
-            products = qset
+            
+            if qset is not None:
+                products = qset
 
-        if 'onSale' in filter and filter['onSale']:
+        if 'onSale' in filter and filter['onSale'] and products is not None:
             products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
 
         # As a safety net, is products has become empty
