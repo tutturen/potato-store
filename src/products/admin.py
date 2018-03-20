@@ -1,24 +1,35 @@
 from django.contrib import admin
-from products.models import Product, Category, User, PercentSale, PackageDeal, Order
+from products.models import Product
+from products.models import Category
+from products.models import User
+from products.models import PercentSale
+from products.models import PackageDeal
+from products.models import Order
+
 
 class CategoryAdmin(admin.ModelAdmin):
     # A category contains only a name, no need to customize
     pass
 
+
 class PercentSaleAdmin(admin.ModelAdmin):
     # Too simple to customize, validation is done in models.py
     pass
+
 
 class PackageDealAdmin(admin.ModelAdmin):
     # Too simple to customize, validation is done in models.py
     pass
 
+
 class ProductAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Product', {'fields': ['category', 'name', 'organic', 'subtitle', 'image']}),
+        ('Product', {'fields': [
+            'category', 'name', 'organic', 'subtitle', 'image']}),
         ('Pricing', {'fields': ['price', 'unitPrice', 'unit']}),
         ('Sale', {'fields': ['percentSale', 'packageDeal']})
     ]
+
 
 class UserAdmin(admin.ModelAdmin):
     fields = ['firstName', 'lastName', 'username', 'cart']
@@ -27,8 +38,10 @@ class UserAdmin(admin.ModelAdmin):
     def cart(self, obj):
         return 'Secrets! {}'.format(obj.cart)
 
+
 class OrderAdmin(admin.ModelAdmin):
     pass
+
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(PercentSale, PercentSaleAdmin)

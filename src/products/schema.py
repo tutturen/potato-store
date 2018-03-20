@@ -5,25 +5,31 @@ from math import inf
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, PercentSale, PackageDeal, Order
 
+
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
+
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = django.contrib.auth.models.User
+
 
 class PercentSaleType(DjangoObjectType):
     class Meta:
         model = PercentSale
 
+
 class PackageDealType(DjangoObjectType):
     class Meta:
         model = PackageDeal
+
 
 class CartType(graphene.ObjectType):
     products = graphene.List(lambda: ProductType)
@@ -44,66 +50,76 @@ class CartType(graphene.ObjectType):
         for productId in products:
             # Query the database
             query = Product.objects.filter(id=productId)
+            q = query[0]
 
             # Add all to the result list
             dbproducts = dbproducts + [x for x in query]
 
             # Calculate prices if possible
+            # Note that we only expect one query result
             if len(query) != 0:
                 # Add item price
-                cart.totalBeforeDiscount += query[0].price
+                cart.totalBeforeDiscount += q.price
 
                 # Default no sale
-                saleprice = query[0].price
+                saleprice = q.price
 
                 # If there are discounts
-                if query[0].percentSale:
-                    saleprice = query[0].price * query[0].percentSale.cut * 0.01
-                if query[0].packageDeal:
+                if q.percentSale:
+                    saleprice = q.price * q.percentSale.cut * 0.01
+                if q.packageDeal:
                     # We need to count stuff then divide by minimum quantity
                     # to figure out how many times to apply the paid quantity.
                     pass
 
                 # At last add sum
-                cart.totalDiscount += query[0].price - saleprice
+                cart.totalDiscount += q.price - saleprice
                 cart.total += saleprice
 
         # Create lists: k is unique products, v is the frequency
-        d = {x:dbproducts.count(x) for x in dbproducts}
+        d = {x: dbproducts.count(x) for x in dbproducts}
         pairs = [(k, v) for (k, v) in d.items()]
 
         # Loop through to find package deals
         for item in pairs:
+            # Extract the product and the count
+            p = item[0]
+            c = item[1]
+
             # Check if the item has a package deal
-            if item[0].packageDeal:
+            if p.packageDeal:
                 # Calculate how many times we have to apply it
-                num = int(item[1] / item[0].packageDeal.minimumQuantity)
+                num = int(c / p.packageDeal.minimumQuantity)
 
                 # Calculate the number of items to reduce per deal
-                rem = int(item[0].packageDeal.minimumQuantity - item[0].packageDeal.paidQuantity)
+                r = p.packageDeal.minimumQuantity - p.packageDeal.paidQuantity
+                rem = int(r)
 
                 # Multiply with number of deals
                 torem = rem * num
 
                 # Calculate the price value to remove
-                value = torem * item[0].price
+                value = torem * p.price
 
                 # Add to discount and remove from total
-                cart.totalDiscount += value;
-                cart.total -= value;
+                cart.totalDiscount += value
+                cart.total -= value
 
         # Return cart with products
         cart.products = dbproducts
         return cart
+
 
 class LoginResultType(graphene.ObjectType):
     user = graphene.Field(UserType)
     success = graphene.Boolean()
     token = graphene.String()
 
+
 class ReceiptType(graphene.ObjectType):
     cart = graphene.Field(CartType)
     success = graphene.Boolean()
+
 
 class CreateAccountMutation(graphene.Mutation, LoginResultType):
     #
@@ -120,11 +136,11 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
         # Try to create a new user and calculate a token
         try:
             # Create new user object with bullshit password
-            user = django.contrib.auth.models.User.objects.create_user (
-                first_name = firstName,
-                last_name = lastName,
-                username = username,
-                password = password)
+            user = django.contrib.auth.models.User.objects.create_user(
+                first_name=firstName,
+                last_name=lastName,
+                username=username,
+                password=password)
 
             # Try saving it to db
             user.save()
@@ -137,10 +153,11 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
 
             # Return the created user, success flag and token
             return CreateAccountMutation(user=user, success=True, token=tok)
-        except:
+        except Exception:
             # Most likely, the user already exists
             # Return blank user and token with success set false
             return CreateAccountMutation(user=None, success=False, token="")
+
 
 class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
     @classmethod
@@ -148,6 +165,7 @@ class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
         user = info.context.user
         user.password = "Hidden"
         return LoginMutation(user=user, success=True)
+
 
 class BuyMutation(graphene.Mutation, ReceiptType):
     class Arguments:
@@ -180,6 +198,7 @@ class BuyMutation(graphene.Mutation, ReceiptType):
             # Return a successful buy operation
             return BuyMutation(cart=cart, success=True)
 
+
 class FilterInputType(graphene.InputObjectType):
     text = graphene.String(required=False)
     minPrice = graphene.Float(required=False)
@@ -190,15 +209,20 @@ class FilterInputType(graphene.InputObjectType):
 
 
 class Query(graphene.ObjectType):
-    all_categories = graphene.NonNull(graphene.List(graphene.NonNull(CategoryType)))
+    # Query types
+    all_categories = graphene.NonNull(
+        graphene.List(graphene.NonNull(CategoryType)))
+
     all_products = graphene.Field(
         type=graphene.NonNull(graphene.List(graphene.NonNull(ProductType))),
-        filter=graphene.Argument(FilterInputType)
-    )
+        filter=graphene.Argument(FilterInputType))
+
     category = graphene.Field(CategoryType,
                               categoryName=graphene.String())
+
     cart = graphene.Field(CartType,
-                          products=graphene.NonNull(graphene.List(graphene.ID)))
+                          products=graphene.NonNull(
+                              graphene.List(graphene.ID)))
 
     def resolve_all_categories(self, info):
         return Category.objects.all()
@@ -254,13 +278,17 @@ class Query(graphene.ObjectType):
                 if qset is None:
                     qset = products.filter(**{constraint: q[constraint]})
                 else:
-                    qset = qset | products.filter(**{constraint: q[constraint]})
+                    qset = qset \
+                        | products.filter(**{constraint: q[constraint]})
 
             products = qset
 
         # Check whether product's category is queried
-        # We need to do a union on this field, but intersection with previous results
-        if 'category' in filter and filter['category'] is not None and products is not None:
+        # We need to do a union on this field, but intersection
+        # with previous results
+        if ('category' in filter and
+                filter['category'] is not None and
+                products is not None):
             categories = filter['category']
             qset = None
             for cat in categories:
@@ -269,12 +297,13 @@ class Query(graphene.ObjectType):
                     qset = products.filter(**kw)
                 else:
                     qset = qset | products.filter(**kw)
-            
+
             if qset is not None:
                 products = qset
 
         if 'onSale' in filter and filter['onSale'] and products is not None:
-            products = products.filter(percentSale__isnull=False) | products.filter(packageDeal__isnull=False)
+            products = products.filter(percentSale__isnull=False) \
+                | products.filter(packageDeal__isnull=False)
 
         # As a safety net, is products has become empty
         if products is None:
@@ -291,6 +320,7 @@ class Query(graphene.ObjectType):
     def resolve_cart(self, info, **kwargs):
         cart = CartType.processcart(kwargs['products'])
         return cart
+
 
 class Mutation(graphene.ObjectType):
     createAccount = CreateAccountMutation.Field()

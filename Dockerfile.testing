@@ -5,6 +5,8 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 ADD src /code/
 WORKDIR /code
-RUN pip install pipenv && pipenv install --ignore-pipfile --system
+RUN pip install pipenv && pipenv install --ignore-pipfile --system && pip install pycodestyle
+
+RUN cd /code/products && pycodestyle admin.py apps.py models.py schema.py tests.py views.py
 
 RUN python3 /code/manage.py test
