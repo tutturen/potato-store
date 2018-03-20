@@ -278,8 +278,8 @@ class Query(graphene.ObjectType):
                 if qset is None:
                     qset = products.filter(**{constraint: q[constraint]})
                 else:
-                    qset = qset
-                    | products.filter(**{constraint: q[constraint]})
+                    qset = qset \
+                        | products.filter(**{constraint: q[constraint]})
 
             products = qset
 
@@ -302,8 +302,8 @@ class Query(graphene.ObjectType):
                 products = qset
 
         if 'onSale' in filter and filter['onSale'] and products is not None:
-            products = products.filter(percentSale__isnull=False)
-            | products.filter(packageDeal__isnull=False)
+            products = products.filter(percentSale__isnull=False) \
+                | products.filter(packageDeal__isnull=False)
 
         # As a safety net, is products has become empty
         if products is None:

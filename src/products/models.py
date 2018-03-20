@@ -47,17 +47,16 @@ class PackageDeal(models.Model):
             raise ValidationError(msg)
 
     def save(self, *args, **kwargs):
-        if (self.paidQuantity > 0 and
-                self.minimumQuantity > 0 and
-                self.paidQuantity < self.minimumQuantity):
+        if (self.minimumQuantity > 0 and
+                0 < self.paidQuantity < self.minimumQuantity):
             super(PackageDeal, self).save(*args, **kwargs)
 
     def __str__(self):
-        return str(self.minimumQuantity)
-        + " for "
-        + str(self.paidQuantity)
-        + " on: "
-        + ", ".join(p.name for p in self.product.all())
+        return str(self.minimumQuantity) \
+            + " for " \
+            + str(self.paidQuantity) \
+            + " on: " \
+            + ", ".join(p.name for p in self.product.all())
 
 
 class Product(models.Model):
