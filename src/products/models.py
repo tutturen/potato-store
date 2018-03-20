@@ -64,22 +64,6 @@ class Product(models.Model):
     )
     organic = models.BooleanField()
 
-    # Sale types
-    percentSale = models.ForeignKey(PercentSale,
-        related_name='sales',
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        verbose_name="Percentage-based sale"
-        )
-    packageDeal = models.ForeignKey(PackageDeal,
-        related_name='sales',
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        verbose_name="Package-deal based sale"
-        )
-
     def clean(self):
         if self.percentSale and self.packageDeal:
             raise ValidationError('You cannot have both percentage sale and package deal at the same time.')

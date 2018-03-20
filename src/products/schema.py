@@ -40,37 +40,52 @@ class CartType(graphene.ObjectType):
                         totalDiscount=0,
                         total=0)
 
+        cart.products = dbproducts
+
+        product_quantity = {}
+        product_pricing = {}
+
         # For every product requested
         for productId in products:
-            # Query the database
-            query = Product.objects.filter(id=productId)
+            # Find the product in the DB
+            deal_product = Product.objects.filter(id=productId)
+
+            # Verify if product is valid
+            if deal_product:
+                deal_product = deal_product[0]
+            else:
+                continue
 
             # Add all to the result list
-            dbproducts = dbproducts + [x for x in query]
+            dbproducts.append(deal_product)
 
-            # Calculate prices if possible
-            if len(query) != 0:
-                # Add item price
-                cart.totalBeforeDiscount += query[0].price
+            # Default price
+            sale_price = deal_product.price
 
-                # Default no sale
-                saleprice = query[0].price
+            cart.totalBeforeDiscount += deal_product.price
 
-                # If there are discounts
-                if query[0].percentSale:
-                    saleprice = query[0].price * query[0].percentSale.cut * 0.01
-                if query[0].packageDeal:
-                    # We need to count stuff then divide by minimum quantity
-                    # to figure out how many times to apply the paid quantity.
-                    pass
+            deals = PercentSale.objects.filter(product=deal_product)
 
-                # At last add sum
-                cart.totalDiscount += query[0].price - saleprice
-                cart.total += saleprice
+            max_deal = None
+            for deal in deals:
+                if max_deal is None:
+                    max_deal = deal
+                else:
+                    if deal.cut > max_deal.cut:
+                        max_deal = deal
+
+            if max_deal is not None:
+                sale_price *= max_deal.cut / 100.
+
+            # At last add sum
+            cart.totalDiscount += deal_product.price - sale_price
+            cart.total += sale_price
 
         # Create lists: k is unique products, v is the frequency
         d = {x:dbproducts.count(x) for x in dbproducts}
         pairs = [(k, v) for (k, v) in d.items()]
+
+        return cart
 
         # Loop through to find package deals
         for item in pairs:
@@ -89,11 +104,10 @@ class CartType(graphene.ObjectType):
                 value = torem * item[0].price
 
                 # Add to discount and remove from total
-                cart.totalDiscount += value;
-                cart.total -= value;
+                cart.totalDiscount += value
+                cart.total -= value
 
         # Return cart with products
-        cart.products = dbproducts
         return cart
 
 class LoginResultType(graphene.ObjectType):
