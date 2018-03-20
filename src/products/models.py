@@ -123,11 +123,11 @@ class Order(models.Model):
         on_delete=models.CASCADE)
 
     def __str__(self):
-        return 'This cart has '
-        + str(self.products.count())
-        + ' items, price total '
-        + str(self.total)
-        + ' kr'
+        return 'This cart has ' \
+            + str(self.products.count()) \
+            + ' items, price total ' \
+            + str(self.total) \
+            + ' kr'
 
 
 class Receipt(models.Model):
@@ -148,7 +148,7 @@ class User(models.Model):
 
     # Customize the name shown in the admin panel
     def __str__(self):
-        return self.firstName
-        + ' '
-        + self.lastName
-        + ' (' + self.username + ')'
+        return self.firstName \
+            + ' ' \
+            + self.lastName \
+            + ' (' + self.username + ')'
