@@ -135,7 +135,20 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
     def mutate(self, info, firstName, lastName, username, password):
         # Try to create a new user and calculate a token
         try:
-            # Create new user object with bullshit password
+            # Check lengths
+            if len(firstName) <= 0:
+                print('Length of first name', len(firstName))
+                raise Warning("No first name")
+
+            if len(lastName) <= 0:
+                print('Length of last name', len(lastName))
+                raise Warning("No last name")
+
+            if len(password) < 8:
+                print('Length of password', len(password))
+                raise Warning("Password too short")
+
+            # Create new user object
             user = django.contrib.auth.models.User.objects.create_user(
                 first_name=firstName,
                 last_name=lastName,
@@ -153,7 +166,10 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
 
             # Return the created user, success flag and token
             return CreateAccountMutation(user=user, success=True, token=tok)
-        except Exception:
+        except Exception as e:
+            # Print the exeption first
+            print(e)
+
             # Most likely, the user already exists
             # Return blank user and token with success set false
             return CreateAccountMutation(user=None, success=False, token="")
