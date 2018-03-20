@@ -23,11 +23,11 @@ class PercentSale(models.Model):
         elif self.cut == 0:
             msg = "For no sale, remove it in the product first"
             raise ValidationError(msg)
-        elif not (self.cut > 0 and self.cut < 100):
+        elif not (0 < self.cut < 100):
             raise ValidationError("Percentage must be between 1 and 99")
 
     def save(self, *args, **kwargs):
-        if self.cut > 0 and self.cut < 100:
+        if 0 < self.cut < 100:
             super(PercentSale, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -74,22 +74,6 @@ class Product(models.Model):
         related_name='products',
         on_delete=models.CASCADE)
     organic = models.BooleanField()
-
-    # Sale types
-    percentSale = models.ForeignKey(
-        PercentSale,
-        related_name='sales',
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        verbose_name="Percentage-based sale")
-    packageDeal = models.ForeignKey(
-        PackageDeal,
-        related_name='sales',
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        verbose_name="Package-deal based sale")
 
     def clean(self):
         if self.percentSale and self.packageDeal:

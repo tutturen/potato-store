@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 import django
 from math import inf
+from collections import defaultdict
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, PercentSale, PackageDeal, Order
 
@@ -9,11 +10,6 @@ from products.models import Category, Product, PercentSale, PackageDeal, Order
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-
-
-class ProductType(DjangoObjectType):
-    class Meta:
-        model = Product
 
 
 class UserType(DjangoObjectType):
@@ -31,82 +27,114 @@ class PackageDealType(DjangoObjectType):
         model = PackageDeal
 
 
+class ProductType(DjangoObjectType):
+    percentSale = PercentSaleType
+    packageDeal = PackageDealType
+
+    class Meta:
+        model = Product
+
+
 class CartType(graphene.ObjectType):
     products = graphene.List(lambda: ProductType)
     totalBeforeDiscount = graphene.Float()
     totalDiscount = graphene.Float()
     total = graphene.Float()
 
-    def processcart(products):
-        # Product IDs requested and results to return
+    @staticmethod
+    def find_sale_details(products, product_quantity,
+                          product_pricing, product_packagedeal):
         dbproducts = []
+        for product_id in products:
+            # Find the product in the DB
+            deal_product = Product.objects.filter(id=product_id)
 
+            # Verify if product is valid
+            if deal_product:
+                deal_product = deal_product[0]
+            else:
+                continue
+
+            # Add all to the result list
+            dbproducts.append(deal_product)
+            product_quantity[product_id] += 1
+
+            # If the price has been calculated, skip the item
+            if product_id in product_pricing:
+                continue
+
+            # Default price
+            sale_price = deal_product.price
+
+            deals = PercentSale.objects.filter(product=deal_product)
+            max_deal = None
+            for deal in deals:
+                if max_deal is None:
+                    max_deal = deal
+                else:
+                    if deal.cut > max_deal.cut:
+                        max_deal = deal
+
+            if max_deal is not None:
+                sale_price *= max_deal.cut / 100.
+
+            # The first package deal is picked
+            package_deals = PackageDeal.objects.filter(product=deal_product)
+            if package_deals:
+                product_packagedeal[product_id] = package_deals[0]
+
+            # Summarize details per product
+            product_pricing[product_id] = (deal_product.price, sale_price)
+
+        return dbproducts
+
+    @staticmethod
+    def calculate_cart_price(cart, product_quantity,
+                             product_packagedeal, product_pricing):
+        for product in product_quantity:
+            original_price, sale_price = product_pricing[product]
+            quantity = product_quantity[product]
+
+            pay_quantity = quantity
+            # A product may or may not have an associated package deal
+            if product in product_packagedeal:
+                deal = product_packagedeal[product]
+
+                discounted = quantity / deal.minimumQuantity
+                discounted *= deal.paidQuantity
+                discounted = int(discounted)
+
+                remainder = quantity % deal.minimumQuantity
+
+                pay_quantity = discounted + remainder
+
+            cart.totalBeforeDiscount += original_price * quantity
+            cart.total += sale_price * pay_quantity
+
+    def processcart(products):
         # Create empty cart type
         cart = CartType(totalBeforeDiscount=0,
                         totalDiscount=0,
                         total=0)
 
-        # For every product requested
-        for productId in products:
-            # Query the database
-            query = Product.objects.filter(id=productId)
-            q = query[0]
+        product_quantity = defaultdict(int)
+        product_pricing = {}
+        product_packagedeal = {}
 
-            # Add all to the result list
-            dbproducts = dbproducts + [x for x in query]
+        # Finding package deals and percent sales
+        cart.products = CartType.find_sale_details(
+            products, product_quantity,
+            product_packagedeal, product_pricing
+        )
 
-            # Calculate prices if possible
-            # Note that we only expect one query result
-            if len(query) != 0:
-                # Add item price
-                cart.totalBeforeDiscount += q.price
+        # At this point we have all information on the products
+        CartType.calculate_cart_price(
+            cart, product_quantity, product_pricing,
+            product_packagedeal
+        )
 
-                # Default no sale
-                saleprice = q.price
+        cart.totalDiscount = cart.totalBeforeDiscount - cart.total
 
-                # If there are discounts
-                if q.percentSale:
-                    saleprice = q.price * q.percentSale.cut * 0.01
-                if q.packageDeal:
-                    # We need to count stuff then divide by minimum quantity
-                    # to figure out how many times to apply the paid quantity.
-                    pass
-
-                # At last add sum
-                cart.totalDiscount += q.price - saleprice
-                cart.total += saleprice
-
-        # Create lists: k is unique products, v is the frequency
-        d = {x: dbproducts.count(x) for x in dbproducts}
-        pairs = [(k, v) for (k, v) in d.items()]
-
-        # Loop through to find package deals
-        for item in pairs:
-            # Extract the product and the count
-            p = item[0]
-            c = item[1]
-
-            # Check if the item has a package deal
-            if p.packageDeal:
-                # Calculate how many times we have to apply it
-                num = int(c / p.packageDeal.minimumQuantity)
-
-                # Calculate the number of items to reduce per deal
-                r = p.packageDeal.minimumQuantity - p.packageDeal.paidQuantity
-                rem = int(r)
-
-                # Multiply with number of deals
-                torem = rem * num
-
-                # Calculate the price value to remove
-                value = torem * p.price
-
-                # Add to discount and remove from total
-                cart.totalDiscount += value
-                cart.total -= value
-
-        # Return cart with products
-        cart.products = dbproducts
         return cart
 
 
