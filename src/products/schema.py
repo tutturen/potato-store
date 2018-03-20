@@ -269,7 +269,7 @@ class Query(graphene.ObjectType):
 
                 # Generate the filter
                 if filter_name == 'text':
-                    kw.update({mapping + '__contains': filter_value.lower()})
+                    kw.update({mapping + '__icontains': filter_value.lower()})
                 elif filter_name == 'minPrice':
                     kw.update({mapping + '__range': (filter_value, inf)})
                 elif filter_name == 'maxPrice':
