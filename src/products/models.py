@@ -115,7 +115,6 @@ class Order(models.Model):
 class Receipt(models.Model):
     success = models.BooleanField()
     order = models.ForeignKey(Order,
-        # related_name='products',
         on_delete=models.CASCADE
     )
 
