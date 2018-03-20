@@ -3,7 +3,6 @@ services:
   - docker
 script:
   - make test
-  - make lint
   - make docker_build_prod
 deploy:
   provider: script
