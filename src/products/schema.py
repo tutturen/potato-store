@@ -2,16 +2,13 @@ import graphene
 import graphql_jwt
 import django
 from math import inf
+from collections import defaultdict
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, PercentSale, PackageDeal, Order
 
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-
-class ProductType(DjangoObjectType):
-    class Meta:
-        model = Product
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -25,30 +22,26 @@ class PackageDealType(DjangoObjectType):
     class Meta:
         model = PackageDeal
 
+class ProductType(DjangoObjectType):
+    percentSale = PercentSaleType
+    packageDeal = PackageDealType
+
+    class Meta:
+        model = Product
+
 class CartType(graphene.ObjectType):
     products = graphene.List(lambda: ProductType)
     totalBeforeDiscount = graphene.Float()
     totalDiscount = graphene.Float()
     total = graphene.Float()
 
-    def processcart(products):
-        # Product IDs requested and results to return
+    @staticmethod
+    def find_sale_details(products, product_quantity,
+                          product_pricing, product_packagedeal):
         dbproducts = []
-
-        # Create empty cart type
-        cart = CartType(totalBeforeDiscount=0,
-                        totalDiscount=0,
-                        total=0)
-
-        cart.products = dbproducts
-
-        product_quantity = {}
-        product_pricing = {}
-
-        # For every product requested
-        for productId in products:
+        for product_id in products:
             # Find the product in the DB
-            deal_product = Product.objects.filter(id=productId)
+            deal_product = Product.objects.filter(id=product_id)
 
             # Verify if product is valid
             if deal_product:
@@ -58,14 +51,16 @@ class CartType(graphene.ObjectType):
 
             # Add all to the result list
             dbproducts.append(deal_product)
+            product_quantity[product_id] += 1
+
+            # If the price has been calculated, skip the item
+            if product_id in product_pricing:
+                continue
 
             # Default price
             sale_price = deal_product.price
 
-            cart.totalBeforeDiscount += deal_product.price
-
             deals = PercentSale.objects.filter(product=deal_product)
-
             max_deal = None
             for deal in deals:
                 if max_deal is None:
@@ -77,37 +72,63 @@ class CartType(graphene.ObjectType):
             if max_deal is not None:
                 sale_price *= max_deal.cut / 100.
 
-            # At last add sum
-            cart.totalDiscount += deal_product.price - sale_price
-            cart.total += sale_price
+            # The first package deal is picked
+            package_deals = PackageDeal.objects.filter(product=deal_product)
+            if package_deals:
+                product_packagedeal[product_id] = package_deals[0]
 
-        # Create lists: k is unique products, v is the frequency
-        d = {x:dbproducts.count(x) for x in dbproducts}
-        pairs = [(k, v) for (k, v) in d.items()]
+            # Summarize details per product
+            product_pricing[product_id] = (deal_product.price, sale_price)
 
-        return cart
+        return dbproducts
 
-        # Loop through to find package deals
-        for item in pairs:
-            # Check if the item has a package deal
-            if item[0].packageDeal:
-                # Calculate how many times we have to apply it
-                num = int(item[1] / item[0].packageDeal.minimumQuantity)
+    @staticmethod
+    def calculate_cart_price(cart, product_quantity,
+                             product_packagedeal, product_pricing):
+        for product in product_quantity:
+            original_price, sale_price = product_pricing[product]
+            quantity = product_quantity[product]
 
-                # Calculate the number of items to reduce per deal
-                rem = int(item[0].packageDeal.minimumQuantity - item[0].packageDeal.paidQuantity)
+            pay_quantity = quantity
+            # A product may or may not have an associated package deal
+            if product in product_packagedeal:
+                deal = product_packagedeal[product]
 
-                # Multiply with number of deals
-                torem = rem * num
+                discounted = quantity / deal.minimumQuantity
+                discounted *= deal.paidQuantity
+                discounted = int(discounted)
 
-                # Calculate the price value to remove
-                value = torem * item[0].price
+                remainder = quantity % deal.minimumQuantity
 
-                # Add to discount and remove from total
-                cart.totalDiscount += value
-                cart.total -= value
+                pay_quantity = discounted + remainder
 
-        # Return cart with products
+            cart.totalBeforeDiscount += original_price * quantity
+            cart.total += sale_price * pay_quantity
+
+    def processcart(products):
+        # Create empty cart type
+        cart = CartType(totalBeforeDiscount=0,
+                        totalDiscount=0,
+                        total=0)
+
+        product_quantity = defaultdict(int)
+        product_pricing = {}
+        product_packagedeal = {}
+
+        # Finding package deals and percent sales
+        cart.products = CartType.find_sale_details(
+            products, product_quantity,
+            product_packagedeal, product_pricing
+        )
+
+        # At this point we have all information on the products
+        CartType.calculate_cart_price(
+            cart, product_quantity, product_pricing,
+            product_packagedeal
+        )
+
+        cart.totalDiscount = cart.totalBeforeDiscount - cart.total
+
         return cart
 
 class LoginResultType(graphene.ObjectType):
