@@ -19,4 +19,5 @@ docker_push_prod:
 
 .PHONY: lint
 lint: $(LINTFILES)
+	pip install pycodestyle
 	pycodestyle $^
