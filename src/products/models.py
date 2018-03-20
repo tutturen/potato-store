@@ -47,9 +47,9 @@ class PackageDeal(models.Model):
             raise ValidationError(msg)
 
     def save(self, *args, **kwargs):
-        if self.paidQuantity > 0
-        and self.minimumQuantity > 0
-        and self.paidQuantity < self.minimumQuantity:
+        if (self.paidQuantity > 0 and
+                self.minimumQuantity > 0 and
+                self.paidQuantity < self.minimumQuantity):
             super(PackageDeal, self).save(*args, **kwargs)
 
     def __str__(self):
