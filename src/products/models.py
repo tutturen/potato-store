@@ -38,8 +38,7 @@ class PercentSale(models.Model):
 class PackageDeal(models.Model):
     product = models.ManyToManyField(
         'Product',
-        related_name='package_deal'
-        )
+        related_name='package_deal')
     paidQuantity = models.IntegerField("You pay for")
     minimumQuantity = models.IntegerField("You buy")
 

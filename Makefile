@@ -1,9 +1,6 @@
-LINTFILES += ./src/products/admin.py
-LINTFILES += ./src/products/apps.py
-LINTFILES += ./src/products/models.py
-LINTFILES += ./src/products/schema.py
-LINTFILES += ./src/products/tests.py
-LINTFILES += ./src/products/views.py
+LINTROOT := ./src
+LINTFILES += $(LINTROOT)/products/
+LINTIGNORE += $(LINTROOT)/products/migrations/
 
 .PHONY: test
 test:
@@ -20,4 +17,4 @@ docker_push_prod:
 .PHONY: lint
 lint: $(LINTFILES)
 	pip install pycodestyle
-	pycodestyle $^
+	pycodestyle --select E,W --count --exclude=$(LINTIGNORE) $^
