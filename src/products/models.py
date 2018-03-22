@@ -40,8 +40,8 @@ class PackageDeal(models.Model):
         'Product',
         related_name='package_deal'
         )
-    paidQuantity = models.IntegerField("Paid quantity")
-    minimumQuantity = models.IntegerField("Minimum quantity")
+    paidQuantity = models.IntegerField("You pay for")
+    minimumQuantity = models.IntegerField("You buy")
 
     def clean(self):
         if self.paidQuantity <= 0 or self.minimumQuantity <= 0:

@@ -357,15 +357,15 @@ class Query(graphene.ObjectType):
     def resolve_all_categories(self, info):
         return Category.objects.all()
 
-    def resolve_all_products(self, info, product_filter):
+    def resolve_all_products(self, info, filter):
         # For text field, we must perform a union of
         #  name and subtitle results
         # For other fields, just perform intersection of results
         products = Product.objects.all()
 
-        products = Query.filter_fields(products, product_filter)
-        products = Query.filter_categories(products, product_filter)
-        products = Query.filter_sales(products, product_filter)
+        products = Query.filter_fields(products, filter)
+        products = Query.filter_categories(products, filter)
+        products = Query.filter_sales(products, filter)
 
         # As a safety net, is products has become empty
         if products is None:
