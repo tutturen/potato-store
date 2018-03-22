@@ -268,15 +268,10 @@ class Query(graphene.ObjectType):
                           products=graphene.NonNull(
                               graphene.List(graphene.ID)))
 
-    def resolve_all_categories(self, info):
-        return Category.objects.all()
-
-    def resolve_all_products(self, info, filter={}):
-
-        # First phase of filtering is to check single-field
-        #  values of the filter
-        # text filter maps to name and subtitle, which
-        #  can be checked relationally
+    # Create a kwargs object that can be filtered with,
+    #  relational operators vary per field
+    @staticmethod
+    def create_keyword_query(filter_name, filter_value):
         field_mappings = {
             'text': ['name', 'subtitle'],
             'minPrice': ['price'],
@@ -284,70 +279,93 @@ class Query(graphene.ObjectType):
             'organic': ['organic']
         }
 
-        # Create a kwargs object that can be filtered with,
-        #  relational operators vary per field
-        def search_fields(filter_name, filter_value):
-            if filter_name not in field_mappings:
-                return {}
+        if filter_name not in field_mappings:
+            return {}
 
-            kw = {}
-            for mapping in field_mappings[filter_name]:
-                if filter_value is None:
-                    continue
+        kw = {}
+        for mapping in field_mappings[filter_name]:
+            if filter_value is None:
+                continue
 
-                # Generate the filter
-                if filter_name == 'text':
-                    kw.update({mapping + '__icontains': filter_value.lower()})
-                elif filter_name == 'minPrice':
-                    kw.update({mapping + '__range': (filter_value, inf)})
-                elif filter_name == 'maxPrice':
-                    kw.update({mapping + '__range': (0, filter_value)})
-                elif filter_name == 'organic':
-                    kw.update({mapping: filter_value})
+            # Generate the filter
+            if filter_name == 'text':
+                kw.update({mapping + '__icontains': filter_value.lower()})
+            elif filter_name == 'minPrice':
+                kw.update({mapping + '__range': (filter_value, inf)})
+            elif filter_name == 'maxPrice':
+                kw.update({mapping + '__range': (0, filter_value)})
+            elif filter_name == 'organic':
+                kw.update({mapping: filter_value})
 
-            return kw
+        return kw
 
-        # For text field, we must perform a union of
-        #  name and subtitle results
-        # For other fields, just perform intersection of results
-        products = Product.objects.all()
-        for field in filter:
-            q = search_fields(field, filter[field])
+    @staticmethod
+    def filter_fields(products, product_filter):
+        # First phase of filtering is to check single-field
+        #  values of the filter
+        for field in product_filter:
+            q = Query.create_keyword_query(field, product_filter[field])
             # If no filter was created, skip
             # Otherwise we get empty results
             if len(q) == 0:
                 continue
-            qset = None
+            select_set = None
             for constraint in q:
-                if qset is None:
-                    qset = products.filter(**{constraint: q[constraint]})
+                if select_set is None:
+                    select_set = products.filter(**{constraint: q[constraint]})
                 else:
-                    qset = qset \
+                    select_set = select_set \
                         | products.filter(**{constraint: q[constraint]})
 
-            products = qset
+            products = select_set
+        return products
 
+    @staticmethod
+    def filter_sales(products, product_filter):
+        if 'onSale' in product_filter and \
+                product_filter['onSale'] and \
+                products is not None:
+
+            products.select_related('percent_sale')
+            products.select_related('package_deal')
+
+            products = products.filter(percent_sale__isnull=False) \
+                | products.filter(package_deal__isnull=False)
+        return products
+
+    @staticmethod
+    def filter_categories(products, product_filter):
         # Check whether product's category is queried
         # We need to do a union on this field, but intersection
         # with previous results
-        if ('category' in filter and
-                filter['category'] is not None and
-                products is not None):
-            categories = filter['category']
-            qset = None
+        if 'category' in product_filter and \
+                product_filter['category'] is not None and \
+                products is not None:
+            categories = product_filter['category']
+            select_set = None
             for cat in categories:
                 kw = {'category': cat}
-                if qset is None:
-                    qset = products.filter(**kw)
+                if select_set is None:
+                    select_set = products.filter(**kw)
                 else:
-                    qset = qset | products.filter(**kw)
+                    select_set = select_set | products.filter(**kw)
 
-            if qset is not None:
-                products = qset
+            if select_set is not None:
+                products = select_set
+        return products
 
-        if 'onSale' in filter and filter['onSale'] and products is not None:
-            products = products.filter(percentSale__isnull=False) \
-                | products.filter(packageDeal__isnull=False)
+    def resolve_all_categories(self, info):
+        return Category.objects.all()
+
+    def resolve_all_products(self, info, product_filter):
+        # For text field, we must perform a union of
+        #  name and subtitle results
+        # For other fields, just perform intersection of results
+        products = Product.objects.all()
+
+        products = Query.filter_fields(products, product_filter)
+        products = Query.filter_categories(products, product_filter)
+        products = Query.filter_sales(products, product_filter)
 
         # As a safety net, is products has become empty
         if products is None:

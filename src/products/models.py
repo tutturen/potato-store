@@ -14,6 +14,7 @@ class Category(models.Model):
 class PercentSale(models.Model):
     product = models.ForeignKey(
         'Product',
+        related_name='percent_sale',
         on_delete=models.CASCADE)
     cut = models.IntegerField("Cut in percent")
 
@@ -35,7 +36,10 @@ class PercentSale(models.Model):
 
 
 class PackageDeal(models.Model):
-    product = models.ManyToManyField('Product')
+    product = models.ManyToManyField(
+        'Product',
+        related_name='package_deal'
+        )
     paidQuantity = models.IntegerField("Paid quantity")
     minimumQuantity = models.IntegerField("Minimum quantity")
 
