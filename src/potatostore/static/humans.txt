@@ -1,0 +1,8 @@
+This site is made by a group of students taking the TDT4242 Advanced Software Development.
+
+It was made by:
+
+ * Håvard Bjerke
+ * Thorben Werner Sjøstrøm Dahl
+ * Erlend Sveen
+ * Thor Even Tutturen
