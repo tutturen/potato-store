@@ -1,5 +1,6 @@
-LINTFILES += ./src/products/
-LINTIGNORE += ./src/products/migrations/
+LINTROOT := ./src
+LINTFILES += $(LINTROOT)/products/
+LINTIGNORE += $(LINTROOT)/products/migrations/
 
 .PHONY: test
 test:
