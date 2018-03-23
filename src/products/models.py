@@ -90,8 +90,27 @@ class Product(models.Model):
         return self.name
 
 
+class ProductPurchase(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE
+    )
+    quantity = models.IntegerField()
+    unitPrice = models.FloatField()
+
+    def __str__(self):
+        return str(self.quantity) \
+            + ' ' + str(self.product) \
+            + ' for ' \
+            + str(self.unitPrice) \
+            + ' kr'
+
+
 class Order(models.Model):
-    products = models.ManyToManyField(Product)
+    products = models.ManyToManyField(
+        ProductPurchase,
+        related_name='purchases'
+    )
     totalBeforeDiscount = models.FloatField()
     totalDiscount = models.FloatField()
     total = models.FloatField()
