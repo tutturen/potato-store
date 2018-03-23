@@ -79,6 +79,9 @@ class Product(models.Model):
         on_delete=models.CASCADE)
     organic = models.BooleanField()
 
+    # Stock value
+    stockValue = models.FloatField("Stock value")
+
     def clean(self):
         validate = URLValidator()
         validate(self.image)
