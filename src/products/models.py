@@ -79,21 +79,10 @@ class Product(models.Model):
     organic = models.BooleanField()
 
     def clean(self):
-        if self.percentSale and self.packageDeal:
-            msg = 'You cannot have both deal types at the same time.'
-            raise ValidationError(msg)
+        pass
 
     def save(self, *args, **kwargs):
-        if not self.percentSale:
-            self.percentSale = None
-
-        if not self.packageDeal:
-            self.packageDeal = None
-
-        if self.percentSale and self.packageDeal:
-            pass
-        else:
-            super(Product, self).save(*args, **kwargs)
+        super(Product, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
