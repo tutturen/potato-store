@@ -26,6 +26,13 @@ pipenv shell
 ./manage.py runserver localhost:8000
 ```
 
+How to check linting:
+
+```bash
+pip install pycodestyle
+make lint
+```
+
 ## Deployment to Heroku
 
     $ git init

@@ -1,7 +1,6 @@
-.PHONY: install_dep
-install_dep:
-	pip install --user pipenv
-	cd src && pipenv install
+LINTROOT := ./src
+LINTFILES += $(LINTROOT)/products/
+LINTIGNORE += $(LINTROOT)/products/migrations/
 
 .PHONY: test
 test:
@@ -14,3 +13,8 @@ docker_build_prod:
 .PHONY: docker_push
 docker_push_prod:
 	docker login --username=_ --password="$(HEROKU_TOKEN)" registry.heroku.com && docker push registry.heroku.com/$(HEROKU_APP)/web
+
+.PHONY: lint
+lint: $(LINTFILES)
+	pip install pycodestyle
+	pycodestyle --select E,W --count --exclude=$(LINTIGNORE) $^

@@ -2,7 +2,7 @@ type Query {
   allProducts(filter: FilterInput): [Product!]!
   allCategories: [Category!]!
   category(categoryName: String): Category
-  cart(products: [ID!]!): Cart
+  cart(products: [CartItem!]!): Cart
   user: User
   createAccount(firstName: String!, lastName: String!, username: String!): LoginResult
 }
@@ -10,10 +10,10 @@ type Query {
 type Mutation {
   createAccount(username: String!, password: String!): LoginResult!
   login(username: String!, password: String!): LoginResult!
-  buy(products: [ID!]!): Receipt!
+  buy(products: [CartItem!]!): Receipt!
 }
 
-type FilterInput {
+input FilterInput {
   text: String
   minPrice: Int
   maxPrice: Int
@@ -32,6 +32,18 @@ type Cart {
   totalBeforeDiscount: Float!
   totalDiscount: Float!
   total: Float!
+}
+
+input CartItemInput {
+    product: ID!
+    quantity: Int!
+}
+
+type CartItem {
+    product: Product!
+    quantity: Int!
+    unitPrice: Float!
+    originalPrice: Float!
 }
 
 type Order {
