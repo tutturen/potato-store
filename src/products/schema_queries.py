@@ -114,7 +114,7 @@ class Query(graphene.ObjectType):
     def resolve_all_categories(self, info):
         return Category.objects.all()
 
-    def resolve_all_products(self, info, filter):
+    def resolve_all_products(self, info, filter={}):
         # For text field, we must perform a union of
         #  name and subtitle results
         # For other fields, just perform intersection of results
