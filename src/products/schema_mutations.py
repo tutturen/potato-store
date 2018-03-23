@@ -3,9 +3,9 @@ import graphql_jwt
 import django
 from products.models import Order
 from products.schema_types import CartType
+from products.schema_types import CartItemInput
 from products.schema_types import LoginResultType
 from products.schema_types import ReceiptType
-from products.schema_types import CategoryType
 
 
 class CreateAccountMutation(graphene.Mutation, LoginResultType):
@@ -72,7 +72,7 @@ class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
 
 class BuyMutation(graphene.Mutation, ReceiptType):
     class Arguments:
-        products = graphene.NonNull(graphene.List(graphene.ID))
+        products = graphene.NonNull(graphene.List(CartItemInput))
 
     def mutate(self, info, **kwargs):
         # Check authentication first, if not logged in return unsuccessful buy

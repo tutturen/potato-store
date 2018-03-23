@@ -2,11 +2,11 @@ import graphene
 from math import inf
 from products.models import Category
 from products.models import Product
-from products.models import Order
 from products.schema_types import CartType
 from products.schema_types import CategoryType
 from products.schema_types import ProductType
 from products.schema_types import FilterInputType
+from products.schema_types import CartItemInput
 
 
 class Query(graphene.ObjectType):
@@ -23,7 +23,7 @@ class Query(graphene.ObjectType):
 
     cart = graphene.Field(CartType,
                           products=graphene.NonNull(
-                              graphene.List(graphene.ID)))
+                              graphene.List(CartItemInput)))
 
     # Create a kwargs object that can be filtered with,
     #  relational operators vary per field
