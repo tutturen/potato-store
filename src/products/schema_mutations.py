@@ -2,6 +2,7 @@ import graphene
 import graphql_jwt
 import django
 from products.models import Order
+from products.models import ProductPurchase
 from products.schema_types import CartType
 from products.schema_types import CartItemInput
 from products.schema_types import LoginResultType
@@ -94,8 +95,14 @@ class BuyMutation(graphene.Mutation, ReceiptType):
 
             # Set products
             products = []
-            for x in cart.products:
-                products = products + [x]
+            for x in cart.items:
+                purchase = ProductPurchase()
+                purchase.product = x.product
+                purchase.quantity = x.quantity
+                purchase.unitPrice = x.unitPrice
+                products = products + [purchase]
+                purchase.save()
+
             order.products.set(products)
 
             # Return a successful buy operation

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from products.models import Product
+from products.models import ProductPurchase
 from products.models import Category
 from products.models import User
 from products.models import PercentSale
@@ -39,8 +40,17 @@ class UserAdmin(admin.ModelAdmin):
         return 'Secrets! {}'.format(obj.cart)
 
 
-class OrderAdmin(admin.ModelAdmin):
+class ProductPurchaseAdmin(admin.ModelAdmin):
     pass
+
+
+class ProductPurchaseInline(admin.TabularInline):
+    model = Order.products.through
+
+
+class OrderAdmin(admin.ModelAdmin):
+    exclude = ('products', )
+    inlines = (ProductPurchaseInline, )
 
 
 admin.site.register(Category, CategoryAdmin)
@@ -49,3 +59,4 @@ admin.site.register(PackageDeal, PackageDealAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Order, OrderAdmin)
+admin.site.register(ProductPurchase, ProductPurchaseAdmin)
