@@ -1,5 +1,6 @@
 import django
 from django.db import models
+from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User as DjangoUser
 
@@ -79,7 +80,8 @@ class Product(models.Model):
     organic = models.BooleanField()
 
     def clean(self):
-        pass
+        validate = URLValidator()
+        validate(self.image)
 
     def save(self, *args, **kwargs):
         super(Product, self).save(*args, **kwargs)
