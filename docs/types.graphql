@@ -34,9 +34,14 @@ type Cart {
   total: Float!
 }
 
-input CartItem {
+input CartItemInput {
     product: ID!
     quantity: Int!
+}
+
+type CartItem {
+    product: Product!
+    count: Int!
 }
 
 type Order {

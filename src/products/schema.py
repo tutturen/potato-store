@@ -35,16 +35,27 @@ class ProductType(DjangoObjectType):
         model = Product
 
 
+class CartItem(graphene.ObjectType):
+    product = graphene.NonNull(ProductType)
+    quantity = graphene.NonNull(graphene.Int)
+    unitPrice = graphene.NonNull(graphene.Float)
+
+
+class CartItemInput(graphene.InputObjectType):
+    product = graphene.NonNull(graphene.ID)
+    quantity = graphene.NonNull(graphene.Int)
+
+
 class CartType(graphene.ObjectType):
-    products = graphene.List(lambda: ProductType)
+    items = graphene.List(CartItem)
     totalBeforeDiscount = graphene.Float()
     totalDiscount = graphene.Float()
     total = graphene.Float()
 
     @staticmethod
-    def find_sale_details(products, product_quantity,
+    def find_sale_details(products,
                           product_pricing, product_packagedeal):
-        dbproducts = []
+        dbproducts = {}
         for product_id in products:
             # Find the product in the DB
             deal_product = Product.objects.filter(id=product_id)
@@ -56,11 +67,18 @@ class CartType(graphene.ObjectType):
                 continue
 
             # Add all to the result list
-            dbproducts.append(deal_product)
-            product_quantity[product_id] += 1
+            try:
+                item = dbproducts[product_id]
+                item.quantity += 1
+            except KeyError:
+                item = CartItem()
+                item.product = deal_product
+                item.quantity = 1
+                dbproducts[product_id] = item
 
             # If the price has been calculated, skip the item
             if product_id in product_pricing:
+                item.unitPrice = product_pricing[product_id][1]
                 continue
 
             # Default price
@@ -85,8 +103,9 @@ class CartType(graphene.ObjectType):
 
             # Summarize details per product
             product_pricing[product_id] = (deal_product.price, sale_price)
+            item.unitPrice = sale_price
 
-        return dbproducts
+        return list(dbproducts.values())
 
     @staticmethod
     def calculate_cart_price(cart, product_quantity,
@@ -122,10 +141,12 @@ class CartType(graphene.ObjectType):
         product_packagedeal = {}
 
         # Finding package deals and percent sales
-        cart.products = CartType.find_sale_details(
-            products, product_quantity,
-            product_packagedeal, product_pricing
+        cart.items = CartType.find_sale_details(
+            products, product_packagedeal, product_pricing
         )
+
+        for item in cart.items:
+            product_quantity[item.product.id] = item.quantity
 
         # At this point we have all information on the products
         CartType.calculate_cart_price(
