@@ -2,7 +2,6 @@ import graphene
 import graphql_jwt
 import django
 from math import inf
-from collections import defaultdict
 from graphene_django.types import DjangoObjectType
 from products.models import Category, Product, PercentSale, PackageDeal, Order
 
@@ -39,6 +38,7 @@ class CartItem(graphene.ObjectType):
     product = graphene.NonNull(ProductType)
     quantity = graphene.NonNull(graphene.Int)
     unitPrice = graphene.NonNull(graphene.Float)
+    originalPrice = graphene.NonNull(graphene.Float)
 
 
 class CartItemInput(graphene.InputObjectType):
@@ -53,10 +53,10 @@ class CartType(graphene.ObjectType):
     total = graphene.Float()
 
     @staticmethod
-    def find_sale_details(products,
-                          product_pricing, product_packagedeal):
+    def find_sale_details(product_quantity, product_pricing,
+                          product_packagedeal):
         dbproducts = {}
-        for product_id in products:
+        for product_id in product_quantity:
             # Find the product in the DB
             deal_product = Product.objects.filter(id=product_id)
 
@@ -67,18 +67,15 @@ class CartType(graphene.ObjectType):
                 continue
 
             # Add all to the result list
-            try:
-                item = dbproducts[product_id]
-                item.quantity += 1
-            except KeyError:
-                item = CartItem()
-                item.product = deal_product
-                item.quantity = 1
-                dbproducts[product_id] = item
+            if product_id in dbproducts:
+                raise ValueError('Duplicate items')
+            item = CartItem()
+            item.product = deal_product
+            item.quantity = product_quantity[product_id]
+            dbproducts[product_id] = item
 
             # If the price has been calculated, skip the item
             if product_id in product_pricing:
-                item.unitPrice = product_pricing[product_id][1]
                 continue
 
             # Default price
@@ -103,13 +100,12 @@ class CartType(graphene.ObjectType):
 
             # Summarize details per product
             product_pricing[product_id] = (deal_product.price, sale_price)
-            item.unitPrice = sale_price
 
         return list(dbproducts.values())
 
     @staticmethod
     def calculate_cart_price(cart, product_quantity,
-                             product_packagedeal, product_pricing):
+                             product_pricing, product_packagedeal):
         for product in product_quantity:
             original_price, sale_price = product_pricing[product]
             quantity = product_quantity[product]
@@ -119,40 +115,51 @@ class CartType(graphene.ObjectType):
             if product in product_packagedeal:
                 deal = product_packagedeal[product]
 
-                discounted = quantity / deal.minimumQuantity
+                discounted = int(quantity / deal.minimumQuantity)
                 discounted *= deal.paidQuantity
                 discounted = int(discounted)
 
                 remainder = quantity % deal.minimumQuantity
 
                 pay_quantity = discounted + remainder
+                product_pricing[product] = (
+                    original_price,
+                    (sale_price * pay_quantity) / quantity
+                )
 
             cart.totalBeforeDiscount += original_price * quantity
             cart.total += sale_price * pay_quantity
 
+    @staticmethod
     def processcart(products):
         # Create empty cart type
         cart = CartType(totalBeforeDiscount=0,
                         totalDiscount=0,
                         total=0)
 
-        product_quantity = defaultdict(int)
+        product_quantity = {
+            item['product']: item['quantity']
+            for item in products
+        }
         product_pricing = {}
         product_packagedeal = {}
 
         # Finding package deals and percent sales
         cart.items = CartType.find_sale_details(
-            products, product_packagedeal, product_pricing
+            product_quantity, product_pricing,
+            product_packagedeal
         )
-
-        for item in cart.items:
-            product_quantity[item.product.id] = item.quantity
 
         # At this point we have all information on the products
         CartType.calculate_cart_price(
             cart, product_quantity, product_pricing,
             product_packagedeal
         )
+
+        for item in cart.items:
+            key = str(item.product.id)
+            item.unitPrice = product_pricing[key][1]
+            item.originalPrice = product_pricing[key][0]
 
         cart.totalDiscount = cart.totalBeforeDiscount - cart.total
 
@@ -234,7 +241,7 @@ class LoginMutation(graphql_jwt.JSONWebTokenMutation, LoginResultType):
 
 class BuyMutation(graphene.Mutation, ReceiptType):
     class Arguments:
-        products = graphene.NonNull(graphene.List(graphene.ID))
+        products = graphene.NonNull(graphene.List(CartItemInput))
 
     def mutate(self, info, **kwargs):
         # Check authentication first, if not logged in return unsuccessful buy
@@ -287,7 +294,7 @@ class Query(graphene.ObjectType):
 
     cart = graphene.Field(CartType,
                           products=graphene.NonNull(
-                              graphene.List(graphene.ID)))
+                              graphene.List(CartItemInput)))
 
     # Create a kwargs object that can be filtered with,
     #  relational operators vary per field

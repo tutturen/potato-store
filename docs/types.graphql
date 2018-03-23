@@ -41,7 +41,9 @@ input CartItemInput {
 
 type CartItem {
     product: Product!
-    count: Int!
+    quantity: Int!
+    unitPrice: Float!
+    originalPrice: Float!
 }
 
 type Order {
