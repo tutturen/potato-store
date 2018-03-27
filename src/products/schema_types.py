@@ -90,7 +90,7 @@ class CartType(graphene.ObjectType):
                         max_deal = deal
 
             if max_deal is not None:
-                sale_price *= max_deal.cut / 100.
+                sale_price *= (100 - max_deal.cut) / 100.
 
             # The first package deal is picked
             package_deals = PackageDeal.objects.filter(product=deal_product)
