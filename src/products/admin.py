@@ -7,6 +7,11 @@ from products.models import PercentSale
 from products.models import PackageDeal
 from products.models import Order
 
+# TODO: Create custom AdminSite sub-class
+# TODO: Override get_urls of AdminSite so notify_user becomes available
+# TODO: Create custom actions for orders which redirects to notify_user view
+# TODO: Create custom actions for users which redirects to notify_user view
+
 
 class CategoryAdmin(admin.ModelAdmin):
     # A category contains only a name, no need to customize
