@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from products.forms import NotifyUserForm
+from django.contrib.auth.models import User
 
 
 def notify_user(request, admin):
@@ -24,8 +25,31 @@ def notify_user(request, admin):
             # TODO: Redirect back to the page the user was on
             return HttpResponseRedirect('/admin/')
     else:
-        # TODO: Prefill list of users from GET fields (set by admin action)
-        form = NotifyUserForm()
+        user_id_field = request.GET.get('u', None)
+        if user_id_field is not None:
+            user_ids = user_id_field.split(',')
+            user_ids = map(int, user_ids)
+            users = User.objects.filter(pk__in=user_ids)
+
+            # Did any users lack email info?
+            users_with_email = users.filter(email__isnull=False).exclude(email='')
+            num_users_wo_email = users.count() - users_with_email.count()
+            if num_users_wo_email > 0:
+                if num_users_wo_email == 1:
+                    message = '1 user is missing email address.' \
+                              ' They will be ignored.'
+                else:
+                    message = '%s users are missing their email address.' \
+                              ' They will be ignored.' \
+                        % num_users_wo_email
+                messages.warning(request, message)
+
+            # Set which users we want to select
+            initial = {'recipients': users_with_email}
+        else:
+            # Select no users
+            initial = None
+        form = NotifyUserForm(initial=initial)
 
     context = dict(
         admin.each_context(request),

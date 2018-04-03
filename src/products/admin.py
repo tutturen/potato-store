@@ -1,5 +1,8 @@
 from django.contrib import admin
+import django.contrib.auth.models
+import django.contrib.auth.admin
 from django.urls import path
+from django.http import HttpResponseRedirect
 from products.models import Product
 from products.models import ProductPurchase
 from products.models import Category
@@ -17,8 +20,22 @@ class ProductsAdminSite(admin.AdminSite):
             path('notify_user', self.admin_view(notify_user), {'admin': self}),
         ]
         return new_urls + urls
-# TODO: Create custom actions for orders which redirects to notify_user view
-# TODO: Create custom actions for users which redirects to notify_user view
+
+
+def notify_users_from_order(modeladmin, request, queryset):
+    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    orders = Order.objects.filter(pk__in=selected)
+    users = map(lambda o: o.user, orders)
+    user_ids = map(lambda u: u.pk, users)
+    user_ids = map(str, user_ids)
+    return HttpResponseRedirect("/admin/notify_user?u=%s" % ",".join(user_ids))
+notify_users_from_order.short_description = "Send email to selected users from order"
+
+
+def notify_users_from_userlist(modeladmin, request, queryset):
+    selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
+    return HttpResponseRedirect("/admin/notify_user?u=%s" % ",".join(selected))
+notify_users_from_userlist.short_description = "Send email to selected users from userlist"
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -45,12 +62,11 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
 
-class UserAdmin(admin.ModelAdmin):
-    fields = ['firstName', 'lastName', 'username', 'cart']
-    readonly_fields = ['cart']
+class UserAdmin(django.contrib.auth.admin.UserAdmin):
+    actions = [notify_users_from_userlist]
 
-    def cart(self, obj):
-        return 'Secrets! {}'.format(obj.cart)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class ProductPurchaseAdmin(admin.ModelAdmin):
@@ -64,6 +80,7 @@ class ProductPurchaseInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     exclude = ('products', )
     inlines = (ProductPurchaseInline, )
+    actions = [notify_users_from_order]
 
 
 our_admin = ProductsAdminSite()
@@ -71,6 +88,10 @@ our_admin.register(Category, CategoryAdmin)
 our_admin.register(PercentSale, PercentSaleAdmin)
 our_admin.register(PackageDeal, PackageDealAdmin)
 our_admin.register(Product, ProductAdmin)
-our_admin.register(User, UserAdmin)
 our_admin.register(Order, OrderAdmin)
 our_admin.register(ProductPurchase, ProductPurchaseAdmin)
+
+our_admin.register(django.contrib.auth.models.Group,
+                   django.contrib.auth.admin.GroupAdmin)
+our_admin.register(django.contrib.auth.models.User,
+                   UserAdmin)
