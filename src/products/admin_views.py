@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from products.forms import NotifyUserForm
 
 
-def notify_user(request):
+def notify_user(request, admin):
     if request.method == 'POST':
         form = NotifyUserForm(request.POST)
         if form.is_valid():
@@ -22,10 +22,13 @@ def notify_user(request):
         # TODO: Prefill list of users from GET fields (set by admin action)
         form = NotifyUserForm()
 
-    return render(request, 'notify_user.html', {
-                      'form': form,
-                      'title': 'Notify users',
-                  })
+    context = dict(
+        admin.each_context(request),
+        form=form,
+        title='Notify users',
+    )
+
+    return render(request, 'products/notify_user.html', context)
 
 
 def perform_user_notification(address, subject, body):

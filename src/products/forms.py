@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import MinLengthValidator
-from products.models import User
+from django.contrib.auth.models import User
 
 
 class NotifyUserForm(forms.Form):

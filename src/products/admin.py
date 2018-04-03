@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import path
 from products.models import Product
 from products.models import ProductPurchase
 from products.models import Category
@@ -6,9 +7,16 @@ from products.models import User
 from products.models import PercentSale
 from products.models import PackageDeal
 from products.models import Order
+from products.admin_views import notify_user
 
-# TODO: Create custom AdminSite sub-class
-# TODO: Override get_urls of AdminSite so notify_user becomes available
+
+class ProductsAdminSite(admin.AdminSite):
+    def get_urls(self):
+        urls = super().get_urls()
+        new_urls = [
+            path('notify_user', self.admin_view(notify_user), {'admin': self}),
+        ]
+        return new_urls + urls
 # TODO: Create custom actions for orders which redirects to notify_user view
 # TODO: Create custom actions for users which redirects to notify_user view
 
@@ -58,10 +66,11 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = (ProductPurchaseInline, )
 
 
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(PercentSale, PercentSaleAdmin)
-admin.site.register(PackageDeal, PackageDealAdmin)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(User, UserAdmin)
-admin.site.register(Order, OrderAdmin)
-admin.site.register(ProductPurchase, ProductPurchaseAdmin)
+our_admin = ProductsAdminSite()
+our_admin.register(Category, CategoryAdmin)
+our_admin.register(PercentSale, PercentSaleAdmin)
+our_admin.register(PackageDeal, PackageDealAdmin)
+our_admin.register(Product, ProductAdmin)
+our_admin.register(User, UserAdmin)
+our_admin.register(Order, OrderAdmin)
+our_admin.register(ProductPurchase, ProductPurchaseAdmin)
