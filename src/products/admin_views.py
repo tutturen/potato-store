@@ -62,7 +62,6 @@ def notify_user(request, admin):
 
 
 def perform_user_notification(address, subject, body):
-    # TODO: Implement the actual sending of emails
     success = send_mail(
         subject,
         body,

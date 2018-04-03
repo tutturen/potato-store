@@ -22,7 +22,6 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
         email = graphene.String(required=True)
 
     def mutate(self, info, firstName, lastName, username, password, email):
-        # TODO: Test creating new users with the new changes (email field)
         # Try to create a new user and calculate a token
         try:
             # Check lengths

@@ -11,6 +11,9 @@
         <div class="field-box">
             {{ field.label_tag }}
             {{ field }}
+            {% if field.help_text %}
+              <div class="help">{{ field.help_text|safe }}</div>
+            {% endif %}
         </div>
         </div>
     {% endfor %}
