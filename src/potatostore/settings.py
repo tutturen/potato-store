@@ -172,3 +172,12 @@ CSRF_TRUSTED_ORIGINS = [
     'localhost:8000',
     'localhost:8080',
 ]
+
+EMAIL_FROM_ADDRESS = os.getenv('EMAIL_FROM_ADDRESS', 'username@stud.ntnu.no')
+EMAIL_HOST_USER = os.getenv('EMAIL_FROM_USER', 'username@ntnu.no')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'yourpassword')
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.office365.com')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
+EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 100
