@@ -6,7 +6,6 @@ from products.forms import NotifyUserForm
 def notify_user(request):
     if request.method == 'POST':
         form = NotifyUserForm(request.POST)
-        # TODO: Check that at least one user was picked as recipient
         if form.is_valid():
             for user in form.cleaned_data['recipients']:
                 if not user.email:
