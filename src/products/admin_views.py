@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from products.forms import NotifyUserForm
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def notify_user(request, admin):
@@ -17,8 +19,7 @@ def notify_user(request, admin):
                 subject = form.cleaned_data['subject']
                 # TODO: Make replacements in body
                 body = form.cleaned_data['body']
-                perform_user_notification(address, subject, body)
-                num_sent += 1
+                num_sent += perform_user_notification(address, subject, body)
             message = '1 message was sent' if num_sent == 1 else\
                 '%s messages were sent' % num_sent
             messages.success(request, message)
@@ -62,4 +63,11 @@ def notify_user(request, admin):
 
 def perform_user_notification(address, subject, body):
     # TODO: Implement the actual sending of emails
+    success = send_mail(
+        subject,
+        body,
+        settings.EMAIL_FROM_ADDRESS,
+        [address],
+    )
     print('Send email to', address, 'with subject', subject, 'and body', body)
+    return success
