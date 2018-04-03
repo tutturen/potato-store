@@ -59,6 +59,14 @@ Django is controlled through the `./manage.py` file, which exposes several comma
     loaddata        - using provided data fixtures, add some dummy data to the database
     createsuperuser - create administrator user for database, use this before trying to access the /admin endpoint
 
+The email server settings are specified locally and are not present in the repository.
+You may either edit `settings.py` locally, or set the [environment variables]
+`EMAIL_FROM_ADDRESS`, `EMAIL_HOST_USER` and `EMAIL_HOST_PASSWORD`. By default,
+the NTNU server for students is set to be used, though you can change that with `EMAIL_HOST` and `EMAIL_PORT`. You will not
+be able to notify users if these are not set.
+
+[environment variables]: https://en.wikipedia.org/wiki/Environment_variable#Syntax
+
 A typical run would be done by (when starting in the git source directory):
 
     cd src/
