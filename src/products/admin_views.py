@@ -33,7 +33,8 @@ def notify_user(request, admin):
             users = User.objects.filter(pk__in=user_ids)
 
             # Did any users lack email info?
-            users_with_email = users.filter(email__isnull=False).exclude(email='')
+            users_with_email = users.filter(email__isnull=False)\
+                .exclude(email='')
             num_users_wo_email = users.count() - users_with_email.count()
             if num_users_wo_email > 0:
                 if num_users_wo_email == 1:

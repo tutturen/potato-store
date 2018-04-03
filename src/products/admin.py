@@ -29,12 +29,16 @@ def notify_users_from_order(modeladmin, request, queryset):
     user_ids = map(lambda u: u.pk, users)
     user_ids = map(str, user_ids)
     return HttpResponseRedirect("/admin/notify_user?u=%s" % ",".join(user_ids))
+
+
 notify_users_from_order.short_description = "Send email to selected users"
 
 
 def notify_users_from_userlist(modeladmin, request, queryset):
     selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
     return HttpResponseRedirect("/admin/notify_user?u=%s" % ",".join(selected))
+
+
 notify_users_from_userlist.short_description = "Send email to selected users"
 
 

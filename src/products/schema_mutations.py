@@ -40,7 +40,6 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
             if not email or len(email) == 0:
                 raise Warning("No email given")
 
-
             # Create new user object
             user = django.contrib.auth.models.User.objects.create_user(
                 first_name=firstName,
