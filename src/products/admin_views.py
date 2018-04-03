@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from products.forms import NotifyUserForm
 
 
@@ -7,6 +8,7 @@ def notify_user(request, admin):
     if request.method == 'POST':
         form = NotifyUserForm(request.POST)
         if form.is_valid():
+            num_sent = 0
             for user in form.cleaned_data['recipients']:
                 if not user.email:
                     continue
@@ -15,7 +17,10 @@ def notify_user(request, admin):
                 # TODO: Make replacements in body
                 body = form.cleaned_data['body']
                 perform_user_notification(address, subject, body)
-            # TODO: Redirect with success message
+                num_sent += 1
+            message = '1 message was sent' if num_sent == 1 else\
+                '%s messages were sent' % num_sent
+            messages.success(request, message)
             # TODO: Redirect back to the page the user was on
             return HttpResponseRedirect('/admin/')
     else:
