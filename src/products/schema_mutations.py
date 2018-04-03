@@ -19,8 +19,9 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
         lastName = graphene.String(required=True)
         username = graphene.String(required=True)
         password = graphene.String(required=True)
+        email = graphene.String(required=True)
 
-    def mutate(self, info, firstName, lastName, username, password):
+    def mutate(self, info, firstName, lastName, username, password, email):
         # Try to create a new user and calculate a token
         try:
             # Check lengths
@@ -36,12 +37,17 @@ class CreateAccountMutation(graphene.Mutation, LoginResultType):
                 print('Length of password', len(password))
                 raise Warning("Password too short")
 
+            if not email or len(email) == 0:
+                raise Warning("No email given")
+
             # Create new user object
             user = django.contrib.auth.models.User.objects.create_user(
                 first_name=firstName,
                 last_name=lastName,
                 username=username,
-                password=password)
+                password=password,
+                email=email,
+            )
 
             # Try saving it to db
             user.save()
